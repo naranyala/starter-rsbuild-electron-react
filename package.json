@@ -1,0 +1,83 @@
+{
+  "name": "electron-react-rsbuild",
+  "version": "0.1.2",
+  "description": "Boilerplate using Rsbuild as bundler for Electron apps.",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run scripts/start-dev-rsbuild.cjs",
+    "rsbuild-dev": "bunx rsbuild dev --open",
+    "electron-dev": "bunx electron main.cjs --start-dev",
+    "start": "bunx electron main.cjs",
+    "build": "bunx rsbuild build",
+    "rsbuild-build": "bunx rsbuild build",
+    "type-check": "tsc --noEmit",
+    "lint": "bunx @biomejs/biome check --write .",
+    "lint-check": "bunx @biomejs/biome check .",
+    "format": "bunx @biomejs/biome format --write .",
+    "format-check": "bunx @biomejs/biome format .",
+    "electron-pack": "bunx electron-builder --dir",
+    "electron-dist": "bunx electron-builder",
+    "electron-postinstall": "bunx electron-builder install-app-deps",
+    "dist": "bun run build && bun run electron-dist"
+  },
+  "author": "naranyala",
+  "build": {
+    "appId": "com.some.electron.quickstart",
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "linux": {
+      "category": "Utility",
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "dist/icon.png"
+    },
+    "win": {
+      "target": "msi",
+      "icon": "dist/icon.png"
+    },
+    "files": [
+      "main.cjs",
+      "dist/**/*"
+    ]
+  },
+  "keywords": [
+    "rsbuild",
+    "react",
+    "electron"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "get-port": "^7.1.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "styled-components": "^5.3.11",
+    "winbox": "^0.2.82"
+  },
+  "devDependencies": {
+    "@rsbuild/core": "^1.7.2",
+    "@rsbuild/plugin-react": "^1.4.3",
+    "@types/minimatch": "^6.0.0",
+    "@types/node": "^25.0.10",
+    "@types/react": "^19.2.10",
+    "@types/react-dom": "^19.2.3",
+    "electron": "^10.4.7",
+    "electron-builder": "^22.14.13",
+    "electron-reload": "^1.5.0",
+    "typescript": "^5.9.3",
+    "wait-on": "^9.0.3"
+  }
+}
