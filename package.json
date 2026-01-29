@@ -4,12 +4,15 @@
   "description": "Boilerplate using Rsbuild as bundler for Electron apps.",
   "type": "module",
   "scripts": {
+    "deps:latest": "bunx npm-check-updates -u -p bun",
     "dev": "bun run scripts/start-dev-rsbuild.cjs",
     "rsbuild-dev": "bunx rsbuild dev --open",
-    "electron-dev": "bunx electron src/main.cjs --start-dev",
-    "start": "bunx electron src/main.cjs",
+    "electron-dev": "bunx electron ./dist-electron/main.js --start-dev",
+    "start": "bunx electron ./dist-electron/main.js",
     "prebuild": "bun run scripts/build-icons.js",
-    "build": "bunx rsbuild build",
+    "build": "bun run build:web && bun run build:electron",
+    "build:web": "bunx rsbuild build",
+    "build:electron": "bunx tsc --project tsconfig.electron.json",
     "postbuild": "bun run scripts/build-icons.js",
     "rsbuild-build": "bunx rsbuild build",
     "type-check": "tsc --noEmit",
@@ -52,7 +55,6 @@
       "icon": "dist/icon.png"
     },
     "files": [
-      "src/main.cjs",
       "dist/**/*"
     ]
   },
@@ -64,21 +66,23 @@
   "license": "MIT",
   "dependencies": {
     "get-port": "^7.1.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "styled-components": "^5.3.11",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "styled-components": "^6.3.8",
     "winbox": "^0.2.82"
   },
   "devDependencies": {
     "@rsbuild/core": "^1.7.2",
     "@rsbuild/plugin-react": "^1.4.3",
     "@types/minimatch": "^6.0.0",
-    "@types/node": "^25.0.10",
+    "@types/node": "^25.1.0",
     "@types/react": "^19.2.10",
     "@types/react-dom": "^19.2.3",
-    "electron": "^10.4.7",
-    "electron-builder": "^22.14.13",
+    "electron": "^40.0.0",
+    "electron-builder": "^26.4.0",
     "electron-reload": "^1.5.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "wait-on": "^9.0.3"
   }

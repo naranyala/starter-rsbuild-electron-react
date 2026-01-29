@@ -33,7 +33,7 @@ async function startDevServer() {
         // Pass the port to electron via environment variable
         process.env.ELECTRON_START_URL = `http://localhost:${port}`;
 
-        const electronProcess = spawn('./node_modules/.bin/electron', ['src/main.cjs', '--start-dev'], {
+        const electronProcess = spawn('./node_modules/.bin/electron', ['--require', 'tsx', 'src/electron-main/main.ts', '--start-dev'], {
           stdio: 'inherit',
           env: { ...process.env, ELECTRON_START_URL: `http://localhost:${port}` }
         });

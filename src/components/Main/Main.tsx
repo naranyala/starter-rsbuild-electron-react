@@ -1,0 +1,96 @@
+import React, { Component } from 'react';
+import '@styles/components/App.css';
+import 'winbox/dist/css/winbox.min.css';
+import { menuData } from '@electron-renderer/data/menu-data';
+import Card from '@components/ui/Card/Card';
+import { MenuItem, FuzzySearchResult } from '@types';
+
+interface AppState {
+  searchTerm: string;
+}
+
+// Simple fuzzy search function
+const fuzzySearch = (text: string, query: string): FuzzySearchResult => {
+  if (!query) return { matches: true, highlightedText: text };
+
+  const lowerText = text.toLowerCase();
+  const lowerQuery = query.toLowerCase();
+
+  let matchFound = true;
+  let highlightedText = '';
+  let queryIndex = 0;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const lowerChar = char.toLowerCase();
+
+    if (queryIndex < lowerQuery.length && lowerChar === lowerQuery[queryIndex]) {
+      highlightedText += `<mark>${char}</mark>`;
+      queryIndex++;
+    } else {
+      highlightedText += char;
+    }
+  }
+
+  // Check if all query characters were found in sequence
+  matchFound = queryIndex === lowerQuery.length;
+
+  return { matches: matchFound, highlightedText };
+};
+
+class Main extends Component<{}, AppState> {
+  constructor(props: {}) {
+    super(props);
+    this.state = {
+      searchTerm: ''
+    };
+  }
+
+  handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ searchTerm: event.target.value });
+  };
+
+  render() {
+    // Filter cards based on search term
+    const filteredCards = menuData.filter((card: MenuItem, index: number) => {
+      const titleMatch = fuzzySearch(card.title, this.state.searchTerm).matches;
+      return titleMatch;
+    });
+
+    return (
+      <div className="App">
+        <main className="App-main-no-navbar">
+          <div className="search-container-no-navbar">
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search topics..."
+              value={this.state.searchTerm}
+              onChange={this.handleSearchChange}
+            />
+            <div className="cards-list">
+              {filteredCards.length > 0 ? (
+                filteredCards.map((card: MenuItem, index: number) => (
+                  <Card
+                    key={card.id || index}
+                    index={index}
+                    title={card.title}
+                    content={card.content}
+                    searchTerm={this.state.searchTerm}
+                  />
+                ))
+              ) : (
+                <div className="no-results">No matching topics found</div>
+              )}
+            </div>
+          </div>
+        </main>
+        <footer className="App-footer">
+          <p>Get started by editing <code>src/components/Main/Main.tsx</code> and save to reload.</p>
+        </footer>
+      </div>
+    );
+  }
+}
+
+export default Main;

@@ -5,7 +5,14 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': './src',
-      '@/lib': './src/lib',
+      '@assets': './src/assets',
+      '@components': './src/components',
+      '@styles': './src/styles',
+      '@utils': './src/utils',
+      '@types': './src/types',
+      '@electron-main': './src/electron-main',
+      '@electron-renderer': './src/electron-renderer',
+      '@electron-preload': './src/electron-preload',
     },
   },
   plugins: [pluginReact()],

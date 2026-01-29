@@ -2,9 +2,50 @@
 // This lib folder contains code for the Electron main process
 
 /**
+ * Interface for application configuration
+ */
+export interface AppConfig {
+  appName: string;
+  version: string;
+  mainWindow: {
+    width: number;
+    height: number;
+    minWidth: number;
+    minHeight: number;
+    webPreferences: {
+      nodeIntegration: boolean;
+      contextIsolation: boolean;
+      webSecurity: boolean;
+    };
+  };
+}
+
+/**
+ * Interface for menu configuration
+ */
+export interface MenuConfig {
+  fileMenu: {
+    label: string;
+    submenu: Array<{
+      label?: string;
+      accelerator?: string;
+      type?: 'separator';
+    }>;
+  };
+  viewMenu: {
+    label: string;
+    submenu: Array<{
+      label?: string;
+      accelerator?: string;
+      type?: 'separator';
+    }>;
+  };
+}
+
+/**
  * Application configuration
  */
-export const appConfig = {
+export const appConfig: AppConfig = {
   appName: 'Electron React Rsbuild App',
   version: '1.0.0',
   mainWindow: {
@@ -23,7 +64,7 @@ export const appConfig = {
 /**
  * Menu configuration for the main process
  */
-export const mainMenuConfig = {
+export const mainMenuConfig: MenuConfig = {
   fileMenu: {
     label: 'File',
     submenu: [
