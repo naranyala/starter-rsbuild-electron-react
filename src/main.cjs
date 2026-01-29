@@ -6,13 +6,6 @@ const url = require('url');
 const args = process.argv.slice(1)
 const serve = args.some(val => val === '--start-dev')
 
-// Let electron reloads by itself when rsbuild watches changes in ./app/
-if (serve) {
-  require('electron-reload')(__dirname, {
-    electron: require(`${__dirname}/node_modules/.bin/electron`),
-    hardResetMethod: 'exit'
-  })
-}
 
 // To avoid being garbage collected
 let mainWindow
@@ -55,7 +48,7 @@ function createWindow() {
     // Use dynamic port from environment variable if available, otherwise default
     const devUrl = process.env.ELECTRON_START_URL || "http://localhost:1234";
     const startUrl = serve ? devUrl : url.format({
-          pathname: path.join(__dirname, 'dist/index.html'),
+          pathname: path.join(__dirname, '../dist/index.html'),
           protocol: 'file:',
           slashes: true
         });
