@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import './App.css';
 import 'winbox/dist/css/winbox.min.css';
 import WinBox from 'winbox/src/js/winbox';
-import { menuData } from '../lib/renderer/menu-data';
-import { generateTheme, generateWindowContent } from '../lib/renderer/window-generator';
+import { menuData } from './lib/renderer/menu-data';
+import { generateTheme, generateWindowContent } from './lib/renderer/window-generator';
 
 // Simple fuzzy search function
 const fuzzySearch = (text, query) => {

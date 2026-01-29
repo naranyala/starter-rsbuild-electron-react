@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "bun run scripts/start-dev-rsbuild.cjs",
     "rsbuild-dev": "bunx rsbuild dev --open",
-    "electron-dev": "bunx electron main.cjs --start-dev",
-    "start": "bunx electron main.cjs",
+    "electron-dev": "bunx electron src/main.cjs --start-dev",
+    "start": "bunx electron src/main.cjs",
     "build": "bunx rsbuild build",
     "rsbuild-build": "bunx rsbuild build",
     "type-check": "tsc --noEmit",
@@ -50,7 +50,7 @@
       "icon": "dist/icon.png"
     },
     "files": [
-      "main.cjs",
+      "src/main.cjs",
       "dist/**/*"
     ]
   },

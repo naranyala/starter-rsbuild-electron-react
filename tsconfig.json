@@ -19,19 +19,17 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@/lib/*": ["lib/*"]
+      "@/lib/*": ["src/lib/*"]
     }
   },
   "include": [
     "src/**/*",
-    "lib/**/*",
     "rsbuild.config.ts"
   ],
   "exclude": [
     "node_modules",
     "dist",
     "build",
-    "scripts",
-    "main.cjs"
+    "scripts"
   ]
 }

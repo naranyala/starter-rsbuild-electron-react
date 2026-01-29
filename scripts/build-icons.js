@@ -3,7 +3,7 @@ const path = require('path');
 
 // Copy icon files to build directory
 function copyIcons() {
-  const assetsDir = path.join(__dirname, '..', 'assets');
+  const assetsDir = path.join(__dirname, '..', 'src', 'assets');
   const buildDir = path.join(__dirname, '..', 'build');
 
   // Ensure build directory exists
