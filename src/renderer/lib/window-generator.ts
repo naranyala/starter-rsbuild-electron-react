@@ -1,7 +1,7 @@
 // Window content generator for WinBox windows
 // Creates dynamic content based on the window title
 
-import type { Theme } from '../../types';
+import type { Theme } from '../types';
 
 // Define TypeScript interfaces
 interface ContentTemplate {

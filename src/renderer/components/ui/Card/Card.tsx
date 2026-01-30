@@ -1,13 +1,12 @@
+import type { CardProps, FuzzySearchResult } from '@renderer/types';
+import { createWindowFromMenuItem, type UseCase, useCaseRegistry } from '@renderer/use-cases';
 import { Component } from 'react';
-import WinBox from 'winbox/src/js/winbox';
-import { generateTheme, generateWindowContent } from '../../../lib/window-generator';
-import type { CardProps, FuzzySearchResult } from '../../../types/index';
 
 // Simple fuzzy search function
 const fuzzySearch = (text: string, query: string): FuzzySearchResult => {
   if (!query) return { matches: true, highlightedText: text };
 
-  const _lowerText = text.toLowerCase();
+  const lowerText = text.toLowerCase();
   const lowerQuery = query.toLowerCase();
 
   let matchFound = true;
@@ -26,51 +25,49 @@ const fuzzySearch = (text: string, query: string): FuzzySearchResult => {
     }
   }
 
-  // Check if all query characters were found in sequence
   matchFound = queryIndex === lowerQuery.length;
 
   return { matches: matchFound, highlightedText };
 };
 
-class Card extends Component<CardProps> {
-  handleCardClick = () => {
-    const { title } = this.props;
+interface CardState {
+  useCase: UseCase | null;
+}
 
-    // Generate dynamic content and theme based on the title
-    const dynamicContent = generateWindowContent(title);
-    const windowTheme = generateTheme(title);
+class Card extends Component<CardProps, CardState> {
+  constructor(props: CardProps) {
+    super(props);
+    this.state = {
+      useCase: null,
+    };
+  }
 
-    // Create a WinBox window with the generated content
-    const winbox = new WinBox({
-      title: title,
-      html: `<div class="winbox-content"><h3 style="color: ${windowTheme.color};">${title}</h3><div style="color: ${windowTheme.color};" class="winbox-dynamic-content">Loading content...</div></div>`,
-      width: '500px',
-      height: '400px',
-      x: 'center',
-      y: 'center',
-      class: 'modern',
-      background: windowTheme.bg,
-      border: 4,
-    });
-
-    // Set the content after the window is created using WinBox's body property
-    setTimeout(() => {
-      if (winbox?.body) {
-        const contentDiv = winbox.body.querySelector('.winbox-dynamic-content');
-        if (contentDiv) {
-          contentDiv.innerHTML = dynamicContent;
-        } else {
-          // If we can't find the specific div, replace all content in the body
-          winbox.body.innerHTML = `<div class="winbox-content"><h3 style="color: ${windowTheme.color};">${title}</h3><div style="color: ${windowTheme.color};">${dynamicContent}</div></div>`;
-        }
+  componentDidMount() {
+    // Look up the use-case from the registry based on the card id
+    const { id } = this.props;
+    if (id) {
+      const useCase = useCaseRegistry.get(id);
+      if (useCase) {
+        this.setState({ useCase });
       }
-    }, 10);
+    }
+  }
+
+  handleCardClick = () => {
+    const { id, title, content } = this.props;
+    const { useCase } = this.state;
+
+    if (useCase) {
+      // Use the modular use-case system
+      createWindowFromMenuItem(id || '', title);
+    } else {
+      // Fallback to legacy behavior
+      createWindowFromMenuItem(id || '', title, content);
+    }
   };
 
   render() {
     const { title, searchTerm } = this.props;
-
-    // Process title for highlighting
     const processedTitle = fuzzySearch(title, searchTerm);
 
     return (

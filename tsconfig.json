@@ -26,6 +26,8 @@
       "@renderer/lib/*": ["src/renderer/lib/*"],
       "@renderer/hooks/*": ["src/renderer/hooks/*"],
       "@renderer/data/*": ["src/renderer/data/*"],
+      "@renderer/use-cases/*": ["src/renderer/use-cases/*"],
+      "@electron-main/use-cases/*": ["src/electron-main/use-cases/*"],
       "@lib/*": ["src/lib/*"],
       "@electron-main/lib/*": ["src/electron-main/lib/*"]
     }

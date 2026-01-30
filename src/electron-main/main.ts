@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { app, BrowserWindow, shell } from 'electron';
 import { appConfig } from './config';
 import { registerIpcHandlers } from './lib/ipc-handlers';
+import { registerUseCaseIpcHandlers } from './use-cases';
 
 // For ES modules, __dirname is not available, so we need to derive it
 const __filename = fileURLToPath(import.meta.url);
@@ -62,6 +63,7 @@ async function createWindow() {
 // This method will be called when Electron has finished initialization
 app.on('ready', async () => {
   registerIpcHandlers();
+  registerUseCaseIpcHandlers();
   createWindow();
 });
 

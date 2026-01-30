@@ -14,6 +14,7 @@ export interface FuzzySearchResult {
 }
 
 export interface CardProps {
+  id?: string;
   title: string;
   content: string;
   index: number;

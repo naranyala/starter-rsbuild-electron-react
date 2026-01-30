@@ -74,6 +74,7 @@ class Main extends Component<Record<string, never>, AppState> {
                 filteredCards.map((card: MenuItem, index: number) => (
                   <Card
                     key={card.id || index}
+                    id={card.id}
                     index={index}
                     title={card.title}
                     content={card.content}
