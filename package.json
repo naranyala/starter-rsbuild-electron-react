@@ -4,26 +4,17 @@
   "description": "Boilerplate using Rsbuild as bundler for Electron apps.",
   "type": "module",
   "scripts": {
-    "deps:latest": "bunx npm-check-updates -u -p bun",
     "dev": "bun run scripts/start-dev-rsbuild.cjs",
-    "rsbuild-dev": "bunx rsbuild dev --open",
-    "electron-dev": "bunx electron ./dist-electron/main.js --start-dev",
-    "start": "bunx electron ./dist-electron/main.js",
     "prebuild": "bun run scripts/build-icons.js",
     "build": "bun run build:web && bun run build:electron",
     "build:web": "bunx rsbuild build",
     "build:electron": "bunx tsc --project tsconfig.electron.json",
     "postbuild": "bun run scripts/build-icons.js",
-    "rsbuild-build": "bunx rsbuild build",
-    "type-check": "tsc --noEmit",
+    "start": "bunx electron ./dist-electron/main.js",
+    "dist": "bun run build && bunx electron-builder",
     "lint": "bunx @biomejs/biome check --write .",
-    "lint-check": "bunx @biomejs/biome check .",
     "format": "bunx @biomejs/biome format --write .",
-    "format-check": "bunx @biomejs/biome format .",
-    "electron-pack": "bunx electron-builder --dir",
-    "electron-dist": "bunx electron-builder",
-    "electron-postinstall": "bunx electron-builder install-app-deps",
-    "dist": "bun run build && bun run electron-dist"
+    "type-check": "bunx tsc --noEmit"
   },
   "author": "naranyala",
   "build": {
@@ -74,7 +65,7 @@
   "devDependencies": {
     "@rsbuild/core": "^1.7.2",
     "@rsbuild/plugin-react": "^1.4.3",
-    "@types/minimatch": "^6.0.0",
+
     "@types/node": "^25.1.0",
     "@types/react": "^19.2.10",
     "@types/react-dom": "^19.2.3",

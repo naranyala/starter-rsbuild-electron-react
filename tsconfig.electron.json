@@ -19,23 +19,22 @@
     "paths": {
       "@/*": ["./src/*"],
       "@assets/*": ["./src/assets/*"],
-      "@components/*": ["./src/components/*"],
+      "@renderer/*": ["./src/renderer/*"],
+      "@renderer/components/*": ["./src/renderer/components/*"],
+      "@renderer/types/*": ["./src/renderer/types/*"],
+      "@renderer/utils/*": ["./src/renderer/utils/*"],
+      "@renderer/lib/*": ["./src/renderer/lib/*"],
+      "@renderer/hooks/*": ["./src/renderer/hooks/*"],
+      "@renderer/data/*": ["./src/renderer/data/*"],
       "@styles/*": ["./src/styles/*"],
       "@utils/*": ["./src/utils/*"],
-      "@types/*": ["./src/types/*"],
+      "@lib/*": ["./src/lib/*"],
       "@electron-main/*": ["./src/electron-main/*"],
-      "@electron-renderer/*": ["./src/electron-renderer/*"],
+      "@electron-main/lib/*": ["./src/electron-main/lib/*"],
       "@electron-preload/*": ["./src/electron-preload/*"]
     },
     "types": ["node"]
   },
-  "include": [
-    "src/electron-main/**/*",
-    "src/electron-preload/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "dist-electron"
-  ]
+  "include": ["src/electron-main/**/*", "src/electron-preload/**/*"],
+  "exclude": ["node_modules", "dist", "dist-electron"]
 }

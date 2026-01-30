@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import WinBox from 'winbox/src/js/winbox';
-import { generateWindowContent, generateTheme } from '@electron-renderer/utils/window-generator';
-import { CardProps, FuzzySearchResult } from '@types';
+import { generateTheme, generateWindowContent } from '../../../lib/window-generator';
+import type { CardProps, FuzzySearchResult } from '../../../types/index';
 
 // Simple fuzzy search function
 const fuzzySearch = (text: string, query: string): FuzzySearchResult => {
   if (!query) return { matches: true, highlightedText: text };
 
-  const lowerText = text.toLowerCase();
+  const _lowerText = text.toLowerCase();
   const lowerQuery = query.toLowerCase();
 
   let matchFound = true;
@@ -34,7 +34,7 @@ const fuzzySearch = (text: string, query: string): FuzzySearchResult => {
 
 class Card extends Component<CardProps> {
   handleCardClick = () => {
-    const { title, content, index } = this.props;
+    const { title } = this.props;
 
     // Generate dynamic content and theme based on the title
     const dynamicContent = generateWindowContent(title);
@@ -55,7 +55,7 @@ class Card extends Component<CardProps> {
 
     // Set the content after the window is created using WinBox's body property
     setTimeout(() => {
-      if (winbox && winbox.body) {
+      if (winbox?.body) {
         const contentDiv = winbox.body.querySelector('.winbox-dynamic-content');
         if (contentDiv) {
           contentDiv.innerHTML = dynamicContent;
@@ -74,12 +74,26 @@ class Card extends Component<CardProps> {
     const processedTitle = fuzzySearch(title, searchTerm);
 
     return (
-      <div className="simple-card" onClick={this.handleCardClick}>
+      <button
+        type="button"
+        className="simple-card"
+        onClick={this.handleCardClick}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            this.handleCardClick();
+          }
+        }}
+        tabIndex={0}
+      >
         <h3
           className="simple-card-title"
-          dangerouslySetInnerHTML={{ __html: processedTitle.matches ? processedTitle.highlightedText : title }}
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: Generated content is safe as it comes from our internal data
+          dangerouslySetInnerHTML={{
+            __html: processedTitle.matches ? processedTitle.highlightedText : title,
+          }}
         />
-      </div>
+      </button>
     );
   }
 }

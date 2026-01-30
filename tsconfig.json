@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "lib": ["dom", "dom.iterable", "es6", "es2017"],
+    "lib": ["dom", "dom.iterable", "es2022"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -19,17 +19,17 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@/lib/*": ["src/lib/*"]
+      "@renderer/*": ["src/renderer/*"],
+      "@renderer/components/*": ["src/renderer/components/*"],
+      "@renderer/types/*": ["src/renderer/types/*"],
+      "@renderer/utils/*": ["src/renderer/utils/*"],
+      "@renderer/lib/*": ["src/renderer/lib/*"],
+      "@renderer/hooks/*": ["src/renderer/hooks/*"],
+      "@renderer/data/*": ["src/renderer/data/*"],
+      "@lib/*": ["src/lib/*"],
+      "@electron-main/lib/*": ["src/electron-main/lib/*"]
     }
   },
-  "include": [
-    "src/**/*",
-    "rsbuild.config.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "build",
-    "scripts"
-  ]
+  "include": ["src/**/*", "rsbuild.config.ts"],
+  "exclude": ["node_modules", "dist", "build", "scripts"]
 }

@@ -1,4 +1,4 @@
-const { spawn } = require('child_process');
+const { spawn } = require('node:child_process');
 const getPortModule = require('get-port');
 const waitOn = require('wait-on');
 
@@ -20,7 +20,7 @@ async function startDevServer() {
     // Spawn rsbuild dev server with the random port
     const rsbuildProcess = spawn('./node_modules/.bin/rsbuild', ['dev', '--port', port], {
       stdio: 'inherit',
-      env: { ...process.env }
+      env: { ...process.env },
     });
 
     // Wait for the Rsbuild server to be ready
@@ -33,10 +33,14 @@ async function startDevServer() {
         // Pass the port to electron via environment variable
         process.env.ELECTRON_START_URL = `http://localhost:${port}`;
 
-        const electronProcess = spawn('./node_modules/.bin/electron', ['--require', 'tsx', 'src/electron-main/main.ts', '--start-dev'], {
-          stdio: 'inherit',
-          env: { ...process.env, ELECTRON_START_URL: `http://localhost:${port}` }
-        });
+        const electronProcess = spawn(
+          './node_modules/.bin/electron',
+          ['--require', 'tsx', 'src/electron-main/main.ts', '--start-dev'],
+          {
+            stdio: 'inherit',
+            env: { ...process.env, ELECTRON_START_URL: `http://localhost:${port}` },
+          }
+        );
 
         electronProcess.on('close', (code) => {
           console.log(`Electron process exited with code ${code}`);
@@ -51,7 +55,6 @@ async function startDevServer() {
     rsbuildProcess.on('close', (code) => {
       console.log(`Rsbuild process exited with code ${code}`);
     });
-
   } catch (error) {
     console.error('Error starting dev server:', error);
   }

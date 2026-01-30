@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
+import type React from 'react';
+import { Component } from 'react';
 import '@styles/components/App.css';
 import 'winbox/dist/css/winbox.min.css';
-import { menuData } from '@electron-renderer/data/menu-data';
-import Card from '@components/ui/Card/Card';
-import { MenuItem, FuzzySearchResult } from '@types';
+import Card from '@renderer/components/ui/Card/Card';
+import { menuData } from '@renderer/data/menu-data';
+import type { FuzzySearchResult, MenuItem } from '@renderer/types';
 
 interface AppState {
   searchTerm: string;
@@ -13,7 +14,7 @@ interface AppState {
 const fuzzySearch = (text: string, query: string): FuzzySearchResult => {
   if (!query) return { matches: true, highlightedText: text };
 
-  const lowerText = text.toLowerCase();
+  const _lowerText = text.toLowerCase();
   const lowerQuery = query.toLowerCase();
 
   let matchFound = true;
@@ -38,11 +39,11 @@ const fuzzySearch = (text: string, query: string): FuzzySearchResult => {
   return { matches: matchFound, highlightedText };
 };
 
-class Main extends Component<{}, AppState> {
-  constructor(props: {}) {
+class Main extends Component<Record<string, never>, AppState> {
+  constructor(props: Record<string, never>) {
     super(props);
     this.state = {
-      searchTerm: ''
+      searchTerm: '',
     };
   }
 
@@ -52,7 +53,7 @@ class Main extends Component<{}, AppState> {
 
   render() {
     // Filter cards based on search term
-    const filteredCards = menuData.filter((card: MenuItem, index: number) => {
+    const filteredCards = menuData.filter((card: MenuItem, _index: number) => {
       const titleMatch = fuzzySearch(card.title, this.state.searchTerm).matches;
       return titleMatch;
     });
@@ -86,7 +87,9 @@ class Main extends Component<{}, AppState> {
           </div>
         </main>
         <footer className="App-footer">
-          <p>Get started by editing <code>src/components/Main/Main.tsx</code> and save to reload.</p>
+          <p>
+            Get started by editing <code>src/components/Main/Main.tsx</code> and save to reload.
+          </p>
         </footer>
       </div>
     );

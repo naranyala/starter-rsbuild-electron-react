@@ -1,4 +1,4 @@
-const { spawn } = require('child_process');
+const { spawn } = require('node:child_process');
 const getPortModule = require('get-port');
 const waitOn = require('wait-on');
 

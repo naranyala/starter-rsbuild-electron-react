@@ -1,8 +1,9 @@
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
-import * as path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import * as path from 'node:path';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { app, BrowserWindow, shell } from 'electron';
 import { appConfig } from './config';
+import { registerIpcHandlers } from './lib/ipc-handlers';
 
 // For ES modules, __dirname is not available, so we need to derive it
 const __filename = fileURLToPath(import.meta.url);
@@ -13,7 +14,7 @@ const __dirname = dirname(__filename);
 let mainWindow: BrowserWindow | null;
 
 // Determine if the app is in development mode
-const isDev = process.argv.some(arg => arg === '--start-dev');
+const isDev = process.argv.some((arg) => arg === '--start-dev');
 
 async function createWindow() {
   // Create the browser window
@@ -23,9 +24,9 @@ async function createWindow() {
     minWidth: appConfig.mainWindow.minWidth,
     minHeight: appConfig.mainWindow.minHeight,
     webPreferences: {
-      nodeIntegration: appConfig.mainWindow.webPreferences.nodeIntegration,
-      contextIsolation: appConfig.mainWindow.webPreferences.contextIsolation,
-      webSecurity: appConfig.mainWindow.webPreferences.webSecurity,
+      nodeIntegration: false,
+      contextIsolation: true,
+      webSecurity: true,
       preload: path.join(__dirname, '../electron-preload/preload.js'), // Add preload script if needed
     },
     icon: path.join(__dirname, '../assets/images/icon.png'), // Add app icon
@@ -60,6 +61,7 @@ async function createWindow() {
 
 // This method will be called when Electron has finished initialization
 app.on('ready', async () => {
+  registerIpcHandlers();
   createWindow();
 });
 
