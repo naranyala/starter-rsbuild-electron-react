@@ -4,12 +4,12 @@
   "description": "Boilerplate using Rsbuild as bundler for Electron apps.",
   "type": "module",
   "scripts": {
-    "dev": "bun run scripts/start-dev-rsbuild.cjs",
-    "prebuild": "bun run scripts/build-icons.js",
+    "dev": "tsx scripts/start-dev-rsbuild.cts",
+    "prebuild": "tsx scripts/build-icons.ts",
     "build": "bun run build:web && bun run build:electron",
     "build:web": "bunx rsbuild build",
     "build:electron": "bunx tsc --project tsconfig.electron.json",
-    "postbuild": "bun run scripts/build-icons.js",
+    "postbuild": "tsx scripts/build-icons.ts",
     "start": "bunx electron ./dist-electron/main.js",
     "dist": "bun run build && bunx electron-builder",
     "lint": "bunx @biomejs/biome check --write .",
@@ -65,11 +65,10 @@
   "devDependencies": {
     "@rsbuild/core": "^1.7.2",
     "@rsbuild/plugin-react": "^1.4.3",
-
     "@types/node": "^25.1.0",
     "@types/react": "^19.2.10",
     "@types/react-dom": "^19.2.3",
-    "electron": "^40.0.0",
+    "electron": "^40.1.0",
     "electron-builder": "^26.4.0",
     "electron-reload": "^1.5.0",
     "ts-node": "^10.9.2",

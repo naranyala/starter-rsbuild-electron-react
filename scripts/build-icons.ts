@@ -1,8 +1,12 @@
-const fs = require('node:fs');
-const path = require('node:path');
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Copy icon files to dist directory
-function copyIcons() {
+function copyIcons(): void {
   const assetsDir = path.join(__dirname, '..', 'src', 'assets');
   const distDir = path.join(__dirname, '..', 'dist');
 

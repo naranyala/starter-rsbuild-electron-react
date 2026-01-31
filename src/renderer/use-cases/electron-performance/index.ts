@@ -1,7 +1,7 @@
 // Performance Optimization - Use Case
 // Provides window configuration and content for Electron performance
 
-import type { ContentSection, UseCase } from '../types';
+import type { ContentSection, UseCase } from '../../types';
 
 const metadata = {
   id: 'electron-performance',

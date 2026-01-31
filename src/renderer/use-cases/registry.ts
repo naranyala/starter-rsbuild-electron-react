@@ -1,32 +1,35 @@
-// Use-case registry for managing window use-cases
-// Provides registration, retrieval, and management of modular window components
+// Electron-main use-case registry
+// Manages backend handlers for use-cases
 
-import type { UseCase, UseCaseMetadata, UseCaseRegistry } from './types';
+import type { ElectronUseCase, ElectronUseCaseRegistry } from './types';
 
 class Registry {
-  private registry: UseCaseRegistry = new Map();
+  private registry: ElectronUseCaseRegistry = new Map();
 
-  register(useCase: UseCase): void {
-    if (this.registry.has(useCase.metadata.id)) {
-      console.warn(`Use-case with id "${useCase.metadata.id}" is already registered. Overwriting.`);
+  register(useCase: ElectronUseCase): void {
+    if (this.registry.has(useCase.id)) {
+      console.warn(`[main] Use-case handler "${useCase.id}" is already registered. Overwriting.`);
     }
-    this.registry.set(useCase.metadata.id, useCase);
+    this.registry.set(useCase.id, useCase);
+    if (useCase.onRegister) {
+      useCase.onRegister();
+    }
   }
 
   unregister(id: string): boolean {
+    const useCase = this.registry.get(id);
+    if (useCase && useCase.onUnregister) {
+      useCase.onUnregister();
+    }
     return this.registry.delete(id);
   }
 
-  get(id: string): UseCase | undefined {
+  get(id: string): ElectronUseCase | undefined {
     return this.registry.get(id);
   }
 
-  getAll(): UseCase[] {
+  getAll(): ElectronUseCase[] {
     return Array.from(this.registry.values());
-  }
-
-  getAllMetadata(): UseCaseMetadata[] {
-    return this.getAll().map((useCase) => useCase.metadata);
   }
 
   has(id: string): boolean {
@@ -34,46 +37,18 @@ class Registry {
   }
 
   clear(): void {
+    this.registry.forEach((useCase) => {
+      if (useCase.onUnregister) {
+        useCase.onUnregister();
+      }
+    });
     this.registry.clear();
   }
 
-  search(query: string): UseCase[] {
-    const lowerQuery = query.toLowerCase();
-    return this.getAll().filter((useCase) => {
-      const { title, description, tags, searchableTerms } = useCase.metadata;
-      const searchText = [title, description, ...tags, ...(searchableTerms || [])]
-        .join(' ')
-        .toLowerCase();
-      return searchText.includes(lowerQuery);
-    });
-  }
-
-  fuzzySearch(query: string): UseCase[] {
-    if (!query) return this.getAll();
-
-    const lowerQuery = query.toLowerCase();
-    return this.getAll().filter((useCase) => {
-      const searchText = useCase.metadata.title.toLowerCase();
-      let queryIndex = 0;
-      for (let i = 0; i < searchText.length; i++) {
-        if (queryIndex < lowerQuery.length && searchText[i] === lowerQuery[queryIndex]) {
-          queryIndex++;
-        }
-      }
-      return queryIndex === lowerQuery.length;
-    });
-  }
-
-  getByCategory(category: string): UseCase[] {
-    return this.getAll().filter((useCase) => useCase.metadata.category === category);
-  }
-
-  getCategories(): string[] {
-    const categories = new Set<string>();
-    this.getAll().forEach((useCase) => categories.add(useCase.metadata.category));
-    return Array.from(categories);
+  getAllHandlers(): Map<string, ElectronUseCase> {
+    return new Map(this.registry);
   }
 }
 
-export const useCaseRegistry = new Registry();
+export const electronUseCaseRegistry = new Registry();
 export { Registry };

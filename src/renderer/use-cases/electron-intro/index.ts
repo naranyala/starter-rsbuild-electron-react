@@ -1,7 +1,7 @@
 // What is Electron? - Use Case
 // Provides window configuration and content for the Electron introduction topic
 
-import type { ContentSection, UseCase, WindowTheme } from '../types';
+import type { ContentSection, UseCase, WindowTheme } from '../../types';
 
 const metadata = {
   id: 'electron-intro',

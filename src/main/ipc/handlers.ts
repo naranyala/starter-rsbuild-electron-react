@@ -7,8 +7,8 @@ import {
   listFiles,
   readFile,
   writeFile,
-} from './fs-utils';
-import { WindowManager } from './window-utils';
+} from '../utils/fs-utils';
+import { WindowManager } from '../windows/window-manager';
 
 /**
  * Register all IPC handlers for communication between main and renderer processes

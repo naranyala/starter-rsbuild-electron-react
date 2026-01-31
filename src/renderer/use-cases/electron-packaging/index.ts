@@ -1,7 +1,7 @@
 // Electron Packaging and Distribution - Use Case
 // Provides window configuration and content for packaging Electron apps
 
-import type { ContentSection, UseCase } from '../types';
+import type { ContentSection, UseCase } from '../../types';
 
 const metadata = {
   id: 'electron-packaging',

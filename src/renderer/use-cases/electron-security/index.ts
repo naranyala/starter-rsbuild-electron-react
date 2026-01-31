@@ -1,7 +1,7 @@
 // Electron Security Best Practices - Use Case
 // Provides window configuration and content for the Electron security topic
 
-import type { ContentSection, UseCase } from '../types';
+import type { ContentSection, UseCase } from '../../types';
 
 const metadata = {
   id: 'electron-security',

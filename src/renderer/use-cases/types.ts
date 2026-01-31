@@ -1,66 +1,36 @@
-// Base types for modular window use-cases
-// Defines the structure for window configuration and content generation
+// Base types for electron-main use-cases
+// Defines structure for backend handlers corresponding to renderer use-cases
 
-export interface WindowTheme {
-  name: string;
-  bg: string;
-  color: string;
+import type { BrowserWindow, IpcMainInvokeEvent } from 'electron';
+
+export interface UseCaseHandlerContext {
+  window: BrowserWindow | null;
+  event: IpcMainInvokeEvent;
 }
 
-export interface WindowDimensions {
-  width: string;
-  height: string;
-  minWidth?: string;
-  minHeight?: string;
-  maxWidth?: string;
-  maxHeight?: string;
+export interface UseCaseHandler {
+  // biome-ignore lint/suspicious/noExplicitAny: Handler return type varies
+  (context: UseCaseHandlerContext, ...args: any[]): Promise<any> | any;
 }
 
-export interface WindowPosition {
-  x: string | number;
-  y: string | number;
+export interface UseCaseHandlers {
+  [channel: string]: UseCaseHandler;
 }
 
-export interface WindowConfig {
+export interface ElectronUseCase {
   id: string;
-  title: string;
-  dimensions: WindowDimensions;
-  position?: WindowPosition;
-  theme: WindowTheme;
-  className?: string;
-  border?: number;
-  modal?: boolean;
-  // biome-ignore lint/suspicious/noExplicitAny: WinBox specific options
-  additionalOptions?: Record<string, any>;
+  // biome-ignore lint/suspicious/noExplicitAny: Metadata structure matches renderer
+  metadata: Record<string, any>;
+  handlers: UseCaseHandlers;
+  onRegister?: () => void;
+  onUnregister?: () => void;
 }
 
-export interface ContentSection {
-  type: 'paragraph' | 'heading' | 'list' | 'custom';
-  content: string;
-  items?: string[]; // For list type
-  level?: number; // For heading type (h1, h2, h3, etc.)
+export type ElectronUseCaseRegistry = Map<string, ElectronUseCase>;
+
+// IPC Response structure
+export interface IpcResponse<T = unknown> {
+  success: boolean;
+  data?: T;
+  error?: string;
 }
-
-export interface UseCaseMetadata {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  tags: string[];
-  searchableTerms: string[]; // Additional terms for fuzzy search
-}
-
-export interface UseCase {
-  metadata: UseCaseMetadata;
-  windowConfig: WindowConfig;
-  generateContent: () => ContentSection[] | string;
-  generateTheme?: () => WindowTheme;
-  onWindowOpen?: () => void;
-  onWindowClose?: () => void;
-}
-
-// Registry type for storing use-cases
-export type UseCaseRegistry = Map<string, UseCase>;
-
-// Factory function type for creating window content
-export type ContentGenerator = (title: string, context?: Record<string, unknown>) => string;

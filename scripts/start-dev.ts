@@ -1,11 +1,8 @@
-const { spawn } = require('node:child_process');
-const getPortModule = require('get-port');
-const waitOn = require('wait-on');
+import { type ChildProcess, spawn } from 'node:child_process';
+import getPort from 'get-port';
+import waitOn from 'wait-on';
 
-// Handle both CommonJS and ES module formats for get-port
-const getPort = typeof getPortModule === 'function' ? getPortModule : getPortModule.default;
-
-async function startDevServer() {
+async function startDevServer(): Promise<void> {
   try {
     // Get a random available port
     const port = await getPort();
@@ -15,9 +12,9 @@ async function startDevServer() {
     process.env.PORT = port.toString();
 
     // Spawn parcel dev server with the random port
-    const parcelProcess = spawn(
+    const parcelProcess: ChildProcess = spawn(
       './node_modules/.bin/parcel',
-      ['./src/index.html', '--dist-dir', 'build', '--port', port],
+      ['./src/index.html', '--dist-dir', 'build', '--port', port.toString()],
       {
         stdio: 'inherit',
         env: { ...process.env },
@@ -34,25 +31,33 @@ async function startDevServer() {
         // Pass the port to electron via environment variable
         process.env.ELECTRON_START_URL = `http://localhost:${port}`;
 
-        const electronProcess = spawn('./node_modules/.bin/electron', ['main.js', '--start-dev'], {
-          stdio: 'inherit',
-          env: { ...process.env, ELECTRON_START_URL: `http://localhost:${port}` },
-        });
+        const electronProcess: ChildProcess = spawn(
+          './node_modules/.bin/electron',
+          ['main.js', '--start-dev'],
+          {
+            stdio: 'inherit',
+            env: { ...process.env, ELECTRON_START_URL: `http://localhost:${port}` },
+          }
+        );
 
-        electronProcess.on('close', (code) => {
+        electronProcess.on('close', (code: number | null) => {
           console.log(`Electron process exited with code ${code}`);
-          parcelProcess.kill();
+          if (parcelProcess.pid) {
+            parcelProcess.kill();
+          }
         });
-      } catch (waitError) {
+      } catch (waitError: any) {
         console.error('Timeout waiting for Parcel server to start:', waitError);
-        parcelProcess.kill();
+        if (parcelProcess.pid) {
+          parcelProcess.kill();
+        }
       }
     }, 2000); // Initial delay before checking
 
-    parcelProcess.on('close', (code) => {
+    parcelProcess.on('close', (code: number | null) => {
       console.log(`Parcel process exited with code ${code}`);
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error starting dev server:', error);
   }
 }

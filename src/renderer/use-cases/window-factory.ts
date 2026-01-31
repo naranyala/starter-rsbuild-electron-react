@@ -2,8 +2,8 @@
 // Integrates use-case registry with WinBox for modular window management
 
 import WinBox from 'winbox/src/js/winbox';
-import { useCaseRegistry } from './registry';
-import type { ContentSection, UseCase, WindowConfig } from './types';
+import type { ContentSection, UseCase, WindowConfig } from '../types';
+import { useCaseRegistry } from './renderer-registry';
 
 interface WinBoxInstance {
   // biome-ignore lint/suspicious/noExplicitAny: WinBox API

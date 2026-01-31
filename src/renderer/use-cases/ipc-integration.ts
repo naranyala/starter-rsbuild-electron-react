@@ -2,7 +2,7 @@
 // Registers all use-case handlers with electron's ipcMain
 
 import { BrowserWindow, ipcMain } from 'electron';
-import { electronUseCaseRegistry } from './index';
+import { electronUseCaseRegistry } from './registry';
 
 /**
  * Register all use-case IPC handlers

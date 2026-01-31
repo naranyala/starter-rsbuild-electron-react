@@ -1,10 +1,10 @@
 import type React from 'react';
 import { Component } from 'react';
-import '@styles/components/App.css';
+import '../../../assets/styles/components/App.css';
 import 'winbox/dist/css/winbox.min.css';
-import Card from '@renderer/components/ui/Card/Card';
-import { menuData } from '@renderer/data/menu-data';
-import type { FuzzySearchResult, MenuItem } from '@renderer/types';
+import { menuData } from '../../../data/menu-data';
+import type { FuzzySearchResult, MenuItem } from '../../../types';
+import Card from '../../ui/Card/Card';
 
 interface AppState {
   searchTerm: string;
@@ -89,7 +89,8 @@ class Main extends Component<Record<string, never>, AppState> {
         </main>
         <footer className="App-footer">
           <p>
-            Get started by editing <code>src/components/Main/Main.tsx</code> and save to reload.
+            Get started by editing <code>src/renderer/components/features/Main/Main.tsx</code> and
+            save to reload.
           </p>
         </footer>
       </div>

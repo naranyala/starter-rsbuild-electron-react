@@ -1,7 +1,7 @@
 // Electron Architecture - Use Case
 // Provides window configuration and content for the Electron architecture topic
 
-import type { ContentSection, UseCase } from '../types';
+import type { ContentSection, UseCase } from '../../types';
 
 const metadata = {
   id: 'electron-architecture',

@@ -1,7 +1,7 @@
 // Native Operating System APIs - Use Case
 // Provides window configuration and content for Electron native APIs
 
-import type { ContentSection, UseCase } from '../types';
+import type { ContentSection, UseCase } from '../../types';
 
 const metadata = {
   id: 'electron-native-apis',

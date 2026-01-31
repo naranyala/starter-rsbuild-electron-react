@@ -1,7 +1,7 @@
 // Version Management - Use Case
 // Provides window configuration and content for Electron version management
 
-import type { ContentSection, UseCase } from '../types';
+import type { ContentSection, UseCase } from '../../types';
 
 const metadata = {
   id: 'electron-versions',

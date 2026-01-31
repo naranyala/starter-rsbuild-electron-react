@@ -29,12 +29,12 @@
       "@styles/*": ["./src/styles/*"],
       "@utils/*": ["./src/utils/*"],
       "@lib/*": ["./src/lib/*"],
-      "@electron-main/*": ["./src/electron-main/*"],
-      "@electron-main/lib/*": ["./src/electron-main/lib/*"],
-      "@electron-preload/*": ["./src/electron-preload/*"]
+      "@main/*": ["./src/main/*"],
+      "@main/lib/*": ["./src/main/lib/*"],
+      "@preload/*": ["./src/preload/*"]
     },
     "types": ["node"]
   },
-  "include": ["src/electron-main/**/*", "src/electron-preload/**/*"],
+  "include": ["src/main/**/*", "src/preload/**/*"],
   "exclude": ["node_modules", "dist", "dist-electron"]
 }
