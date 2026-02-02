@@ -1,10 +1,14 @@
+import { setup } from 'goober';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './assets/styles/global/reset.css';
-import './assets/styles/global/index.css';
-import './assets/styles/components/TabFilter.css';
-import './assets/styles/components/App.css';
 import Main from './components/features/Main/Main';
+import { injectGlobalStyles } from './styles';
+
+// Setup goober with React.createElement
+setup(React.createElement);
+
+// Inject global styles
+injectGlobalStyles();
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 root.render(

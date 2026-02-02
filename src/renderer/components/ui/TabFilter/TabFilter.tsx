@@ -1,3 +1,5 @@
+import { TabFilterContainer, TabFilterInner, TabItem } from '@renderer/styles';
+import clsx from 'clsx';
 import type { ComponentPropsWithoutRef } from 'react';
 import { Component } from 'react';
 
@@ -20,7 +22,7 @@ class TabFilter extends Component<TabFilterProps, TabFilterState> {
   }
 
   componentDidUpdate(prevProps: TabFilterProps) {
-    if (prevProps.activeTab !== this.props.activeTab) {
+    if (prevProps.activeTab !== this.props.activeTab && this.props.activeTab) {
       this.setState({ activeTab: this.props.activeTab });
     }
   }
@@ -31,17 +33,18 @@ class TabFilter extends Component<TabFilterProps, TabFilterState> {
   };
 
   render() {
-    const { tabs, className, ...rest } = this.props;
-    const { activeTab } = this.state;
+    const { tabs, className, activeTab, onTabChange, ...rest } = this.props;
+    const { activeTab: stateActiveTab } = this.state;
+    const currentActiveTab = activeTab || stateActiveTab;
 
     return (
-      <div className={`tab-filter ${className || ''}`} {...rest}>
-        <div className="tab-filter-container">
+      <TabFilterContainer className={clsx(className)} {...rest}>
+        <TabFilterInner>
           {tabs.map((tab) => (
-            <button
+            <TabItem
               key={tab.id}
               type="button"
-              className={`tab-item ${activeTab === tab.id ? 'active' : ''}`}
+              isActive={currentActiveTab === tab.id}
               onClick={() => this.handleTabClick(tab.id)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -50,14 +53,14 @@ class TabFilter extends Component<TabFilterProps, TabFilterState> {
                 }
               }}
               tabIndex={0}
-              aria-selected={activeTab === tab.id}
+              aria-selected={currentActiveTab === tab.id}
               role="tab"
             >
               {tab.label}
-            </button>
+            </TabItem>
           ))}
-        </div>
-      </div>
+        </TabFilterInner>
+      </TabFilterContainer>
     );
   }
 }

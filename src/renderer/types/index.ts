@@ -13,6 +13,7 @@ export interface CardProps {
   title: string;
   content: string;
   index: number;
+  onClick?: (id: string, title: string) => void;
 }
 
 export interface Theme {

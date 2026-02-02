@@ -17,6 +17,10 @@ let mainWindow: BrowserWindow | null;
 // Determine if the app is in development mode
 const isDev = process.argv.some((arg) => arg === '--start-dev');
 
+// Disable hardware acceleration to avoid VA-API errors on some systems
+// This must be called before app is ready
+app.disableHardwareAcceleration();
+
 async function createWindow() {
   // Create the browser window
   mainWindow = new BrowserWindow({
@@ -24,13 +28,16 @@ async function createWindow() {
     height: appConfig.mainWindow.height,
     minWidth: appConfig.mainWindow.minWidth,
     minHeight: appConfig.mainWindow.minHeight,
+    title: 'Electron App',
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       webSecurity: true,
-      preload: path.join(__dirname, '../preload/preload.js'), // Add preload script if needed
+      preload: path.join(__dirname, '../preload/preload.js'),
+      sandbox: false,
+      allowRunningInsecureContent: false,
     },
-    icon: path.join(__dirname, '../renderer/assets/images/icon.png'), // Add app icon
+    icon: path.join(__dirname, '../renderer/assets/images/icon.png'),
   });
 
   // Load the index.html when not in development
@@ -40,7 +47,14 @@ async function createWindow() {
   } else {
     // Load the url from the dev server when in development mode
     const devUrl = process.env.ELECTRON_START_URL || 'http://localhost:35703';
-    await mainWindow.loadURL(devUrl);
+    console.log('Loading dev URL:', devUrl); // Debug log
+    try {
+      await mainWindow.loadURL(devUrl);
+      console.log('Successfully loaded URL'); // Debug log
+    } catch (error) {
+      console.error('Failed to load URL:', error); // Debug log
+      throw error;
+    }
 
     // Don't open DevTools by default in development
     // Only open when needed for debugging

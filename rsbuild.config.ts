@@ -19,6 +19,7 @@ export default defineConfig({
       '@renderer/hooks': './src/renderer/hooks',
       '@renderer/data': './src/renderer/data',
       '@renderer/use-cases': './src/renderer/use-cases',
+      '@renderer/styles': './src/renderer/styles',
       '@styles': './src/renderer/assets/styles',
       '@utils': './src/renderer/utils',
       '@lib': './src/renderer/lib',
@@ -41,5 +42,8 @@ export default defineConfig({
     distPath: {
       root: './dist',
     },
+  },
+  server: {
+    directory: true,
   },
 });

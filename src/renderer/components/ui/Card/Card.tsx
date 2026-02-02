@@ -1,3 +1,4 @@
+import { SimpleCard, SimpleCardTitle } from '@renderer/styles';
 import type { CardProps } from '@renderer/types';
 import { createWindowFromMenuItem, type UseCase, useCaseRegistry } from '@renderer/use-cases';
 import { Component } from 'react';
@@ -15,7 +16,6 @@ class Card extends Component<CardProps, CardState> {
   }
 
   componentDidMount() {
-    // Look up the use-case from the registry based on the card id
     const { id } = this.props;
     if (id) {
       const useCase = useCaseRegistry.get(id);
@@ -25,16 +25,30 @@ class Card extends Component<CardProps, CardState> {
     }
   }
 
-  handleCardClick = () => {
-    const { id, title, content } = this.props;
+  handleCardClick = async () => {
+    const { id, title, content, onClick } = this.props;
     const { useCase } = this.state;
 
-    if (useCase) {
-      // Use the modular use-case system
-      createWindowFromMenuItem(id || '', title);
-    } else {
-      // Fallback to legacy behavior
-      createWindowFromMenuItem(id || '', title, content);
+    console.log('Card clicked:', { id, title, useCaseExists: !!useCase });
+
+    try {
+      if (useCase) {
+        await createWindowFromMenuItem(id || '', title);
+      } else {
+        await createWindowFromMenuItem(id || '', title, content);
+      }
+
+      const globalWindow = typeof window !== 'undefined' ? window : ({} as Window);
+      const event = new CustomEvent('focus-window', {
+        detail: { id: id || '', title },
+      });
+      globalWindow.dispatchEvent(event);
+
+      if (onClick) {
+        onClick(id || '', title);
+      }
+    } catch (error) {
+      console.error('Failed to create window:', error);
     }
   };
 
@@ -42,9 +56,8 @@ class Card extends Component<CardProps, CardState> {
     const { title } = this.props;
 
     return (
-      <button
+      <SimpleCard
         type="button"
-        className="simple-card"
         onClick={this.handleCardClick}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
@@ -54,10 +67,8 @@ class Card extends Component<CardProps, CardState> {
         }}
         tabIndex={0}
       >
-        <h3 className="simple-card-title">
-          {title}
-        </h3>
-      </button>
+        <SimpleCardTitle>{title}</SimpleCardTitle>
+      </SimpleCard>
     );
   }
 }

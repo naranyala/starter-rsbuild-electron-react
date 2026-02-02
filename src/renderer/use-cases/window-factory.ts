@@ -11,7 +11,21 @@ interface WinBoxInstance {
   body?: HTMLElement;
   // biome-ignore lint/suspicious/noExplicitAny: WinBox callback
   onclose?: () => any;
+  // Additional properties for window state management
+  id?: string;
+  minimize?: () => void;
+  focus?: () => void;
+  isMinimized?: boolean;
+  onFocus?: (callback: () => void) => void;
+  onblur?: (callback: () => void) => void;
+  hide?: () => void;
+  show?: () => void;
+  toggle?: () => void;
+  dom?: HTMLElement;
 }
+
+// Store references to created windows
+const windowInstances = new Map<string, WinBoxInstance>();
 
 /**
  * Converts content sections to HTML string
@@ -79,6 +93,9 @@ export function createWindowFromUseCase(
 ): WinBoxInstance {
   const { windowConfig, metadata, generateContent, generateTheme: customGenerateTheme } = useCase;
 
+  // Generate a unique ID for the window
+  const windowId = `${metadata.title}-${Date.now()}`;
+
   // Determine theme - use dark theme by default
   const theme = customGenerateTheme ? customGenerateTheme() : generateDarkTheme(metadata.title);
 
@@ -108,18 +125,66 @@ export function createWindowFromUseCase(
     maxheight: windowConfig.dimensions.maxHeight,
     x: position?.x ?? windowConfig.position?.x ?? 'center',
     y: position?.y ?? windowConfig.position?.y ?? 'center',
-    class: windowConfig.className ?? 'modern dark-theme',
-    background: windowConfig.theme?.bg ?? theme.bg,
+    class: windowConfig.className ?? 'modern dark-theme', // Ensure dark theme class is applied
+    background: windowConfig.theme?.bg ?? theme.bg, // Use generated dark theme background
     border: windowConfig.border ?? 4,
     modal: windowConfig.modal ?? false,
     ...windowConfig.additionalOptions,
   }) as WinBoxInstance;
+
+  // Add ID and state tracking to the window instance
+  winbox.id = windowId;
+
+  // Track minimized state
+  let isMinimizedState = false;
+  let isActiveState = false; // Track if this window is currently active/focused
+  winbox.isMinimized = isMinimizedState;
+
+  // Override the minimize method to track state
+  const originalMinimize = (winbox as any).minimize;
+  winbox.minimize = () => {
+    isMinimizedState = !isMinimizedState;
+    winbox.isMinimized = isMinimizedState;
+    if (originalMinimize) {
+      originalMinimize.call(winbox);
+    }
+  };
+
+  // Override the focus method
+  const originalFocus = (winbox as any).focus;
+  winbox.focus = () => {
+    // Update active state
+    isActiveState = true;
+
+    // If the window is minimized, restore it first
+    if (isMinimizedState && originalMinimize) {
+      // Toggle to restore from minimized state
+      originalMinimize.call(winbox);
+      isMinimizedState = false;
+      winbox.isMinimized = isMinimizedState;
+    }
+    if (originalFocus) {
+      originalFocus.call(winbox);
+    }
+  };
+
+  // Add blur event to track when window loses focus
+  const originalOnblur = (winbox as any).on;
+  if (originalOnblur) {
+    originalOnblur.call(winbox, 'blur', () => {
+      isActiveState = false;
+    });
+  }
 
   // Store callback for when window closes
   const originalClose = winbox.close;
   winbox.close = () => {
     if (useCase.onWindowClose) {
       useCase.onWindowClose();
+    }
+    // Remove from instances map when closed
+    if (winbox.id) {
+      windowInstances.delete(winbox.id);
     }
     return originalClose.call(winbox);
   };
@@ -130,6 +195,11 @@ export function createWindowFromUseCase(
       useCase.onWindowOpen();
     }
   }, 10);
+
+  // Store the window instance
+  if (winbox.id) {
+    windowInstances.set(winbox.id, winbox);
+  }
 
   return winbox;
 }
@@ -183,10 +253,58 @@ export function createWindowFromMenuItem(
     height: '400px',
     x: position?.x ?? 'center',
     y: position?.y ?? 'center',
-    class: 'modern dark-theme',
-    background: theme.bg,
+    class: 'modern dark-theme', // Ensure dark theme class is applied
+    background: theme.bg, // Use generated dark theme background
     border: 4,
   }) as WinBoxInstance;
+}
+
+/**
+ * Gets a window by ID
+ */
+export function getWindow(id: string): WinBoxInstance | undefined {
+  return windowInstances.get(id);
+}
+
+/**
+ * Checks if a window is minimized
+ */
+export function isWindowMinimized(id: string): boolean {
+  const window = windowInstances.get(id);
+  return window?.isMinimized === true;
+}
+
+/**
+ * Checks if a window is currently active/focused
+ */
+export function isWindowActive(id: string): boolean {
+  const window = windowInstances.get(id);
+  // Note: We can't directly access the active state from the closure,
+  // so we'll determine activity based on whether it's not minimized and has focus
+  return window ? !window.isMinimized : false;
+}
+
+/**
+ * Toggles a window's minimized state
+ */
+export function toggleWindow(id: string): boolean {
+  const window = windowInstances.get(id);
+  if (window && window.minimize) {
+    window.minimize();
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Minimizes all windows
+ */
+export function minimizeAll(): void {
+  for (const window of windowInstances.values()) {
+    if (window.minimize) {
+      window.minimize();
+    }
+  }
 }
 
 export { contentSectionsToHtml, generateDarkTheme };
