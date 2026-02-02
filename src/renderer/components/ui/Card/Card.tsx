@@ -1,34 +1,6 @@
-import type { CardProps, FuzzySearchResult } from '@renderer/types';
+import type { CardProps } from '@renderer/types';
 import { createWindowFromMenuItem, type UseCase, useCaseRegistry } from '@renderer/use-cases';
 import { Component } from 'react';
-
-// Simple fuzzy search function
-const fuzzySearch = (text: string, query: string): FuzzySearchResult => {
-  if (!query) return { matches: true, highlightedText: text };
-
-  const lowerText = text.toLowerCase();
-  const lowerQuery = query.toLowerCase();
-
-  let matchFound = true;
-  let highlightedText = '';
-  let queryIndex = 0;
-
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    const lowerChar = char.toLowerCase();
-
-    if (queryIndex < lowerQuery.length && lowerChar === lowerQuery[queryIndex]) {
-      highlightedText += `<mark>${char}</mark>`;
-      queryIndex++;
-    } else {
-      highlightedText += char;
-    }
-  }
-
-  matchFound = queryIndex === lowerQuery.length;
-
-  return { matches: matchFound, highlightedText };
-};
 
 interface CardState {
   useCase: UseCase | null;
@@ -67,8 +39,7 @@ class Card extends Component<CardProps, CardState> {
   };
 
   render() {
-    const { title, searchTerm } = this.props;
-    const processedTitle = fuzzySearch(title, searchTerm);
+    const { title } = this.props;
 
     return (
       <button
@@ -83,13 +54,9 @@ class Card extends Component<CardProps, CardState> {
         }}
         tabIndex={0}
       >
-        <h3
-          className="simple-card-title"
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: Generated content is safe as it comes from our internal data
-          dangerouslySetInnerHTML={{
-            __html: processedTitle.matches ? processedTitle.highlightedText : title,
-          }}
-        />
+        <h3 className="simple-card-title">
+          {title}
+        </h3>
       </button>
     );
   }

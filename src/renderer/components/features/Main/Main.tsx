@@ -3,40 +3,33 @@ import { Component } from 'react';
 import '../../../assets/styles/components/App.css';
 import 'winbox/dist/css/winbox.min.css';
 import { menuData } from '../../../data/menu-data';
-import type { FuzzySearchResult, MenuItem } from '../../../types';
+import type { MenuItem } from '../../../types';
 import Card from '../../ui/Card/Card';
+import TabFilter from '../../ui/TabFilter/TabFilter';
 
 interface AppState {
   searchTerm: string;
+  activeTab: string;
 }
 
-// Simple fuzzy search function
-const fuzzySearch = (text: string, query: string): FuzzySearchResult => {
-  if (!query) return { matches: true, highlightedText: text };
+// Simple fuzzy search function - returns only boolean match
+const fuzzySearch = (text: string, query: string): boolean => {
+  if (!query) return true;
 
-  const _lowerText = text.toLowerCase();
+  const lowerText = text.toLowerCase();
   const lowerQuery = query.toLowerCase();
 
-  let matchFound = true;
-  let highlightedText = '';
   let queryIndex = 0;
 
   for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    const lowerChar = char.toLowerCase();
+    const lowerChar = text[i].toLowerCase();
 
     if (queryIndex < lowerQuery.length && lowerChar === lowerQuery[queryIndex]) {
-      highlightedText += `<mark>${char}</mark>`;
       queryIndex++;
-    } else {
-      highlightedText += char;
     }
   }
 
-  // Check if all query characters were found in sequence
-  matchFound = queryIndex === lowerQuery.length;
-
-  return { matches: matchFound, highlightedText };
+  return queryIndex === lowerQuery.length;
 };
 
 class Main extends Component<Record<string, never>, AppState> {
@@ -44,6 +37,7 @@ class Main extends Component<Record<string, never>, AppState> {
     super(props);
     this.state = {
       searchTerm: '',
+      activeTab: 'all', // Default to showing all items
     };
   }
 
@@ -51,11 +45,32 @@ class Main extends Component<Record<string, never>, AppState> {
     this.setState({ searchTerm: event.target.value });
   };
 
+  handleTabChange = (tabId: string) => {
+    this.setState({ activeTab: tabId });
+  };
+
   render() {
-    // Filter cards based on search term
-    const filteredCards = menuData.filter((card: MenuItem, _index: number) => {
-      const titleMatch = fuzzySearch(card.title, this.state.searchTerm).matches;
-      return titleMatch;
+    // Define available tabs
+    const tabs = [
+      { id: 'all', label: 'All Integrations' },
+      { id: 'framework', label: 'Framework' },
+      { id: 'api', label: 'Native APIs' },
+      { id: 'security', label: 'Security' },
+      { id: 'performance', label: 'Performance' },
+      { id: 'packaging', label: 'Packaging' },
+      { id: 'development', label: 'Development' },
+      { id: 'maintenance', label: 'Maintenance' },
+    ];
+
+    // Filter cards based on search term and active tab
+    const filteredCards = menuData.filter((card: MenuItem) => {
+      // Search filter
+      const titleMatch = fuzzySearch(card.title, this.state.searchTerm);
+
+      // Tab filter
+      const tabMatch = this.state.activeTab === 'all' || card.category === this.state.activeTab;
+
+      return titleMatch && tabMatch;
     });
 
     return (
@@ -69,6 +84,11 @@ class Main extends Component<Record<string, never>, AppState> {
               value={this.state.searchTerm}
               onChange={this.handleSearchChange}
             />
+            <TabFilter
+              tabs={tabs}
+              activeTab={this.state.activeTab}
+              onTabChange={this.handleTabChange}
+            />
             <div className="cards-list">
               {filteredCards.length > 0 ? (
                 filteredCards.map((card: MenuItem, index: number) => (
@@ -78,7 +98,6 @@ class Main extends Component<Record<string, never>, AppState> {
                     index={index}
                     title={card.title}
                     content={card.content}
-                    searchTerm={this.state.searchTerm}
                   />
                 ))
               ) : (

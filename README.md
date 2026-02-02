@@ -1,26 +1,59 @@
-# Electron + React Starter with Rsbuild
+# Enterprise-Grade Electron + React Development Platform
 
-A production-ready boilerplate for building cross-platform desktop applications using Electron, React 19, and Rsbuild. Features a modular architecture for scalable development and optimized performance.
+Transform your desktop application vision into reality with our comprehensive starter kit. This production-ready platform eliminates setup overhead and accelerates development cycles, enabling teams to focus on building exceptional user experiences rather than configuring infrastructure.
 
-## Key Features
+## Why Choose Our Platform?
 
-- **High-Performance Bundling**: Powered by Rsbuild for lightning-fast builds and HMR
-- **Modern Tech Stack**: React 19 with TypeScript, Electron 40, and contemporary tooling
-- **Modular Architecture**: Scalable use-case system for organized code structure
-- **Cross-Platform**: Deploy to Windows, macOS, and Linux with a single codebase
-- **Developer Experience**: Integrated linting, formatting, and path aliases
-- **Window Management**: Built-in WinBox integration for advanced window controls
-- **Automated IPC**: Streamlined inter-process communication with auto-registration
-- **Production Ready**: Optimized configurations for distribution and packaging
+### Accelerated Time-to-Market
+Deploy cross-platform desktop applications in days, not months. Our pre-configured architecture eliminates weeks of setup and configuration, allowing your team to begin building features immediately.
 
-## Quick Start
+### Enterprise-Ready Architecture
+Built with scalability in mind, our modular architecture supports complex applications with thousands of users. The use-case system ensures clean separation of concerns, making maintenance and expansion straightforward.
 
-### Prerequisites
-- Node.js >= 18.x
-- Bun (recommended) or npm
-- Git
+### Superior Performance
+Powered by Rsbuild, our platform delivers lightning-fast build times and optimized bundles. Experience near-instantaneous hot module replacement during development and efficient production builds.
 
-### Installation
+### Cross-Platform Excellence
+Reach users on Windows, macOS, and Linux with a single codebase. Our platform ensures consistent user experience across all operating systems while maintaining native performance characteristics.
+
+### Professional Developer Experience
+Comprehensive tooling including automated linting, type checking, and formatting ensures code quality. Pre-configured path aliases and integrated development workflows maximize productivity.
+
+## Technical Specifications
+
+### Core Technologies
+- **Frontend Framework**: React 19 with TypeScript
+- **Desktop Runtime**: Electron 40
+- **Build System**: Rsbuild with optimized configurations
+- **Styling Solution**: Styled Components with CSS-in-JS
+- **Window Management**: Advanced WinBox integration
+- **IPC System**: Automated inter-process communication
+
+### Development Features
+- Hot Module Replacement for instant feedback
+- Comprehensive type safety with TypeScript
+- Automated code formatting and linting
+- Pre-configured path aliases for clean imports
+- Modular use-case architecture
+- Secure IPC communication patterns
+
+### Deployment Capabilities
+- Cross-platform packaging with electron-builder
+- Optimized production builds
+- Automated distribution preparation
+- Platform-specific installer generation
+- Asset optimization and compression
+
+## Getting Started
+
+### System Requirements
+- Node.js version 18.x or higher
+- Bun package manager (recommended) or npm
+- Git version control system
+
+### Installation Process
+Execute these commands to initialize your development environment:
+
 ```bash
 # Clone the repository
 git clone <repository-url>
@@ -28,88 +61,94 @@ cd starter-rsbuild-electron-react
 
 # Install dependencies
 bun install
-# or
+# Alternative with npm
 npm install
 ```
 
-### Development
+### Launch Development Environment
+Begin development with a single command:
+
 ```bash
 # Start development server with hot reloading
 bun run dev
-# or
+# Alternative with npm
 npm run dev
 ```
 
-### Production Build
+### Production Deployment
+Prepare your application for distribution:
+
 ```bash
-# Create production build
+# Create optimized production build
 bun run build
 
-# Package for distribution
+# Package for cross-platform distribution
 bun run dist
 ```
 
 ## Architecture Overview
 
-This starter implements a modular use-case architecture that separates concerns between frontend components and backend services:
+Our platform implements a sophisticated modular architecture that separates business logic from presentation layers:
 
-- **Frontend Use-Cases**: Self-contained window components with configurable layouts
-- **Backend Use-Cases**: IPC handlers for main process operations
-- **Registry System**: Centralized discovery and management of use-cases
-- **Auto Registration**: Backend handlers automatically connect to IPC channels
+- **Frontend Use-Cases**: Self-contained, configurable window components with isolated state management
+- **Backend Services**: Main process handlers with secure IPC communication
+- **Registry System**: Centralized component discovery and lifecycle management
+- **Auto Registration**: Seamless integration between frontend and backend services
 
 ## Project Structure
+
 ```
 src/
-├── electron-main/          # Electron main process
-│   ├── use-cases/          # Backend use-case handlers
-│   ├── lib/                # Main process utilities
-│   └── main.ts             # Entry point
-├── electron-preload/       # Preload scripts
-├── renderer/               # React application
-│   ├── use-cases/          # Frontend use-case modules
-│   ├── components/         # React components
-│   ├── styles/             # Global styles
-│   └── index.tsx           # Application entry
-└── assets/                 # Static assets
+├── electron-main/          # Main process implementation
+│   ├── use-cases/          # Backend service handlers
+│   ├── lib/                # Core utilities
+│   └── main.ts             # Application entry point
+├── electron-preload/       # Secure preload scripts
+├── renderer/               # React application layer
+│   ├── use-cases/          # Frontend modules
+│   ├── components/         # Reusable UI components
+│   ├── styles/             # Global styling
+│   └── index.tsx           # Client-side entry
+└── assets/                 # Static resources
 ```
 
-## Path Aliases
+## Available Commands
 
-Clean imports with pre-configured aliases:
-- `@` → `./src`
-- `@renderer` → `./src/renderer`
-- `@electron-main` → `./src/electron-main`
-- `@assets` → `./src/assets`
-- And more for streamlined development
+| Command | Description |
+|---------|-------------|
+| `dev` | Launch development server with live reloading |
+| `build` | Generate optimized production build |
+| `dist` | Create distributable packages for all platforms |
+| `lint` | Execute code quality analysis |
+| `format` | Apply automated code formatting |
+| `type-check` | Validate TypeScript compilation |
+| `check-electron` | Verify Electron installation integrity |
 
-## Scripts
+## Competitive Advantages
 
-| Command | Purpose |
-|---------|---------|
-| `dev` | Start development server |
-| `build` | Create production build |
-| `dist` | Package for distribution |
-| `lint` | Code quality check |
-| `type-check` | TypeScript validation |
+### Rapid Development Cycles
+Eliminate configuration overhead and begin feature development immediately. Our pre-built solutions handle complex Electron configurations, allowing your team to focus on business value.
 
-## Benefits
+### Maintainable Codebase
+The modular architecture ensures long-term maintainability. Clear separation of concerns and consistent patterns make onboarding new developers seamless.
 
-- **Rapid Development**: Pre-configured tooling reduces setup time
-- **Scalable Architecture**: Modular design supports growing applications
-- **Optimized Performance**: Rsbuild delivers fast builds and efficient bundles
-- **Maintainable Code**: Clear separation of concerns and consistent patterns
-- **Professional Ready**: Production-focused configurations out of the box
+### Performance Optimized
+Built with performance as a priority. Efficient bundling, optimized IPC communication, and memory management ensure smooth user experiences.
 
-## Technologies
+### Future-Proof Technology Stack
+Stay current with industry standards. Our platform uses cutting-edge tools and follows best practices that evolve with technological advances.
 
-- **Frontend**: React 19, TypeScript, Styled Components
-- **Build Tool**: Rsbuild with React plugin
-- **Desktop**: Electron 40 with secure IPC
-- **Styling**: CSS-in-JS with component-based approach
-- **Packaging**: electron-builder for cross-platform distribution
-- **Quality**: Biome for linting and formatting
+### Professional Support Structure
+Well-documented architecture with clear upgrade paths. The modular design accommodates new technologies without requiring complete rewrites.
+
+## Ideal For
+
+- Software development teams building cross-platform desktop applications
+- Startups requiring rapid prototyping and deployment
+- Enterprises seeking standardized desktop application development
+- Developers transitioning from web to desktop application development
+- Organizations requiring consistent user experiences across operating systems
 
 ## License
 
-MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for complete terms and conditions.

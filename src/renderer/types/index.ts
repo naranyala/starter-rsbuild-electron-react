@@ -8,17 +8,11 @@ export interface MenuItem {
   tags: string[];
 }
 
-export interface FuzzySearchResult {
-  matches: boolean;
-  highlightedText: string;
-}
-
 export interface CardProps {
   id?: string;
   title: string;
   content: string;
   index: number;
-  searchTerm: string;
 }
 
 export interface Theme {

@@ -44,20 +44,20 @@ function contentSectionsToHtml(sections: ContentSection[] | string): string {
 }
 
 /**
- * Generates theme based on title hash
+ * Generates dark theme based on title hash
  */
-function generateTheme(title: string): { bg: string; color: string } {
+function generateDarkTheme(title: string): { bg: string; color: string } {
   const themes = [
-    { bg: '#4a6cf7', color: 'white' },
-    { bg: '#4ade80', color: 'black' },
-    { bg: '#a78bfa', color: 'white' },
-    { bg: '#f87171', color: 'white' },
-    { bg: '#fbbf24', color: 'black' },
-    { bg: '#6366f1', color: 'white' },
-    { bg: '#ec4899', color: 'white' },
-    { bg: '#14b8a6', color: 'white' },
-    { bg: '#f97316', color: 'white' },
-    { bg: '#6b7280', color: 'white' },
+    { bg: '#2d2d2d', color: '#e0e0e0' }, // Dark gray with light text
+    { bg: '#1a1a1a', color: '#e0e0e0' }, // Very dark gray with light text
+    { bg: '#252525', color: '#e0e0e0' }, // Secondary dark gray
+    { bg: '#3a3a3a', color: '#ffffff' }, // Slightly lighter gray
+    { bg: '#202020', color: '#f0f0f0' }, // Almost black with bright text
+    { bg: '#333333', color: '#dcdcdc' }, // Medium dark gray
+    { bg: '#282828', color: '#e8e8e8' }, // Dark gray with bright text
+    { bg: '#1e1e1e', color: '#f5f5f5' }, // VS Code-like dark
+    { bg: '#2b2b2b', color: '#eaeaea' }, // IntelliJ-like dark
+    { bg: '#222222', color: '#ededed' }, // Near-black with light text
   ];
 
   let hash = 0;
@@ -79,24 +79,24 @@ export function createWindowFromUseCase(
 ): WinBoxInstance {
   const { windowConfig, metadata, generateContent, generateTheme: customGenerateTheme } = useCase;
 
-  // Determine theme
-  const theme = customGenerateTheme ? customGenerateTheme() : generateTheme(metadata.title);
+  // Determine theme - use dark theme by default
+  const theme = customGenerateTheme ? customGenerateTheme() : generateDarkTheme(metadata.title);
 
   // Generate content
   const content = generateContent();
   const htmlContent = contentSectionsToHtml(content);
 
-  // Build window HTML
+  // Build window HTML with dark theme styling
   const windowHtml = `
     <div class="winbox-content">
-      <h3 style="color: ${theme.color};">${metadata.title}</h3>
+      <h3 style="color: ${theme.color}; margin-top: 0;">${metadata.title}</h3>
       <div style="color: ${theme.color};" class="winbox-dynamic-content">
         ${htmlContent}
       </div>
     </div>
   `;
 
-  // Create WinBox instance
+  // Create WinBox instance with dark theme
   const winbox = new WinBox({
     title: metadata.title,
     html: windowHtml,
@@ -108,7 +108,7 @@ export function createWindowFromUseCase(
     maxheight: windowConfig.dimensions.maxHeight,
     x: position?.x ?? windowConfig.position?.x ?? 'center',
     y: position?.y ?? windowConfig.position?.y ?? 'center',
-    class: windowConfig.className ?? 'modern',
+    class: windowConfig.className ?? 'modern dark-theme',
     background: windowConfig.theme?.bg ?? theme.bg,
     border: windowConfig.border ?? 4,
     modal: windowConfig.modal ?? false,
@@ -166,10 +166,10 @@ export function createWindowFromMenuItem(
   }
 
   // Fallback to dynamic window creation for unregistered items
-  const theme = generateTheme(title);
+  const theme = generateDarkTheme(title);
   const windowHtml = `
     <div class="winbox-content">
-      <h3 style="color: ${theme.color};">${title}</h3>
+      <h3 style="color: ${theme.color}; margin-top: 0;">${title}</h3>
       <div style="color: ${theme.color};" class="winbox-dynamic-content">
         ${content || `<p>Content for "${title}"</p>`}
       </div>
@@ -183,10 +183,10 @@ export function createWindowFromMenuItem(
     height: '400px',
     x: position?.x ?? 'center',
     y: position?.y ?? 'center',
-    class: 'modern',
+    class: 'modern dark-theme',
     background: theme.bg,
     border: 4,
   }) as WinBoxInstance;
 }
 
-export { contentSectionsToHtml, generateTheme };
+export { contentSectionsToHtml, generateDarkTheme };
