@@ -1,5 +1,5 @@
 import { ErrorHandler } from './utils/error-handler';
-import { ensureDir, copyFile, fileExists, joinProjectPath } from './utils/fs-utils';
+import { copyFile, ensureDir, fileExists, joinProjectPath } from './utils/fs-utils';
 import { Logger } from './utils/logger';
 
 /**
@@ -9,7 +9,7 @@ import { Logger } from './utils/logger';
 async function buildIcons(): Promise<void> {
   try {
     Logger.info('Starting icon build process...');
-    
+
     const assetsDir = joinProjectPath('src', 'assets');
     const distDir = joinProjectPath('dist');
 

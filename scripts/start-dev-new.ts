@@ -1,7 +1,7 @@
-import { spawnProcess, killProcess } from './utils/process-utils';
-import { getAvailablePort, waitForResources } from './utils/network-utils';
 import { ErrorHandler } from './utils/error-handler';
 import { Logger } from './utils/logger';
+import { getAvailablePort, waitForResources } from './utils/network-utils';
+import { killProcess, spawnProcess } from './utils/process-utils';
 
 /**
  * Starts the development server with parcel and electron
@@ -19,7 +19,7 @@ class ParcelDevServerManager {
   async startDevServer(): Promise<void> {
     try {
       Logger.info('Starting Parcel development server...');
-      
+
       // Get a random available port
       this.context.port = await getAvailablePort();
       Logger.info(`Using port: ${this.context.port}`);
@@ -49,7 +49,10 @@ class ParcelDevServerManager {
             ['main.js', '--start-dev'],
             {
               stdio: 'inherit',
-              env: { ...process.env, ELECTRON_START_URL: `http://localhost:${this.context.port!.toString()}` },
+              env: {
+                ...process.env,
+                ELECTRON_START_URL: `http://localhost:${this.context.port!.toString()}`,
+              },
             }
           );
 

@@ -27,11 +27,13 @@
       "@renderer/hooks/*": ["src/renderer/hooks/*"],
       "@renderer/data/*": ["src/renderer/data/*"],
       "@renderer/use-cases/*": ["src/renderer/use-cases/*"],
-      "@electron-main/use-cases/*": ["src/electron-main/use-cases/*"],
-      "@lib/*": ["src/lib/*"],
-      "@electron-main/lib/*": ["src/electron-main/lib/*"]
+      "@main/*": ["src/main/*"],
+      "@main/lib/*": ["src/main/lib/*"],
+      "@main/use-cases/*": ["src/main/use-cases/*"],
+      "@main/ipc/*": ["src/main/ipc/*"],
+      "@shared/*": ["src/shared/*"]
     }
   },
-  "include": ["src/**/*", "rsbuild.config.ts", "scripts/**/*", "types/**/*"],
+  "include": ["src/**/*", "tests/**/*", "rsbuild.config.ts", "scripts/**/*", "types/**/*"],
   "exclude": ["node_modules", "dist", "build"]
 }

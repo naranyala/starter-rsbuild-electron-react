@@ -28,9 +28,14 @@ import {
   SidebarWindows,
   SidebarWindowTitle,
   WinboxContainer,
-} from '@renderer/styles';
+} from '@renderer/lib/styled';
 import type { MenuItem } from '@renderer/types';
-import { getWindow, isWindowMinimized, isWindowActive, toggleWindow } from '@renderer/use-cases/window-factory';
+import {
+  getWindow,
+  isWindowActive,
+  isWindowMinimized,
+  toggleWindow,
+} from '@renderer/use-cases/window-factory';
 
 interface WindowInfo {
   id: string;
@@ -292,7 +297,7 @@ class Main extends Component<Record<string, never>, AppState> {
                       <SidebarWindowBtn
                         type="button"
                         key={windowInfo.id}
-                        isActive={isActive}
+                        $isActive={isActive}
                         onClick={() => this.handleFocusWindow(windowInfo)}
                       >
                         <SidebarWindowTitle>{windowInfo.title}</SidebarWindowTitle>

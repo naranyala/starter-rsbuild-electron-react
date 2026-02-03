@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
+import { ErrorHandler } from './utils/error-handler';
 import { joinProjectPath } from './utils/fs-utils';
 import { Logger } from './utils/logger';
-import { ErrorHandler } from './utils/error-handler';
 
 /**
  * Script to check if Electron is properly installed
@@ -19,7 +19,7 @@ async function checkElectronInstallation(): Promise<void> {
       console.log(electronPath.trim());
     } else {
       Logger.error('✗ Electron path.txt missing - binary download failed');
-      
+
       console.log('');
       console.log('To fix this issue:');
       console.log('1. Try using a VPN or different network connection');

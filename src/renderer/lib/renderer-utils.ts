@@ -394,7 +394,7 @@ export namespace BrowserUtils {
    * Get browser version
    */
   function getBrowserVersion(ua: string): string {
-    const match = ua.match(/(Chrome|Firefox|Safari|Edge|Opera)\\/(\\d+)/);
+    const match = ua.match(/(Chrome|Firefox|Safari|Edge|Opera)\/(\\d+)/)
     return match ? match[2] : '0';
   }
 

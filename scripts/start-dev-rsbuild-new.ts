@@ -1,7 +1,7 @@
-import { spawnProcess, killProcess, waitForProcess } from './utils/process-utils';
-import { getAvailablePort, waitForResources } from './utils/network-utils';
 import { ErrorHandler } from './utils/error-handler';
 import { Logger, LogLevel } from './utils/logger';
+import { getAvailablePort, waitForResources } from './utils/network-utils';
+import { killProcess, spawnProcess, waitForProcess } from './utils/process-utils';
 
 /**
  * Starts the development server with rsbuild and electron
@@ -19,7 +19,7 @@ class DevServerManager {
   async startDevServer(): Promise<void> {
     try {
       Logger.info('Starting development server...');
-      
+
       // Get a random available port
       this.context.port = await getAvailablePort();
       Logger.info(`Using port: ${this.context.port}`);
@@ -49,7 +49,10 @@ class DevServerManager {
             ['--require', 'tsx', 'src/electron-main/main.ts', '--start-dev'],
             {
               stdio: 'inherit',
-              env: { ...process.env, ELECTRON_START_URL: `http://localhost:${this.context.port!.toString()}` },
+              env: {
+                ...process.env,
+                ELECTRON_START_URL: `http://localhost:${this.context.port!.toString()}`,
+              },
             }
           );
 

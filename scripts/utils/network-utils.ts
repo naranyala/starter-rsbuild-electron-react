@@ -19,7 +19,10 @@ export async function getAvailablePort(): Promise<number> {
 /**
  * Waits for resources to become available
  */
-export async function waitForResources(resources: string[], timeout: number = 30000): Promise<void> {
+export async function waitForResources(
+  resources: string[],
+  timeout: number = 30000
+): Promise<void> {
   try {
     await waitOn({ resources, timeout });
   } catch (error) {

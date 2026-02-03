@@ -16,7 +16,24 @@
     "lint": "bunx @biomejs/biome check --write .",
     "format": "bunx @biomejs/biome format --write .",
     "type-check": "bunx tsc --noEmit",
-    "check-electron": "tsx scripts/main.ts check-electron"
+    "check-electron": "tsx scripts/main.ts check-electron",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "test:security": "bun test tests/security.test.ts",
+    "test:coverage": "bun test --coverage",
+    "test:security:coverage": "bun test tests/security.test.ts --coverage",
+    "test:performance": "bun test tests/performance.test.ts",
+    "test:security:watch": "bun test tests/security.test.ts --watch",
+    "build:security": "bun run build && bun run test:security",
+    "build:security:coverage": "bun run build && bun run test:security:coverage",
+    "build:security:watch": "bun run build && bun run test:security:watch",
+    "security:audit": "bunx npm audit",
+    "security:scan": "bunx snyk test",
+    "security:scan:watch": "bunx snyk test --watch",
+    "security:build": "bun run build:security && bun run security:audit && bun run security:scan",
+    "security:full": "bun run security:build && bun run test:coverage && bun run security:scan:watch",
+    "ci": "bun run test:coverage && bun run build && bun run security:audit",
+    "ci:security": "bun run test:security:coverage && bun run build:security && bun run security:scan"
   },
   "author": "naranyala",
   "build": {
@@ -67,17 +84,20 @@
     "winbox": "^0.2.82"
   },
   "devDependencies": {
-    "@rsbuild/core": "^1.7.2",
-    "@rsbuild/plugin-react": "^1.4.4",
+    "@biomejs/biome": "^2.16.0",
+    "@rsbuild/core": "^1.7.3",
+    "@rsbuild/plugin-react": "^1.4.5",
     "@types/node": "^25.2.0",
     "@types/react": "^19.2.10",
     "@types/react-dom": "^19.2.3",
+    "bun": "^1.0.0",
     "electron": "^40.1.0",
     "electron-builder": "^26.7.0",
     "electron-reload": "^1.5.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "wait-on": "^9.0.3"
+    "wait-on": "^9.0.3",
+    "bun": "^1.0.0"
   }
 }

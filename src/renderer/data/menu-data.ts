@@ -90,7 +90,7 @@ export const menuData: MenuItem[] = [
   {
     id: 'electron-file-system',
     title: 'File System Integration',
-    content: 'Access and manipulate files on the user\'s system',
+    content: "Access and manipulate files on the user's system",
     category: 'api',
     tags: ['file-system', 'fs', 'read-write', 'local-storage'],
   },

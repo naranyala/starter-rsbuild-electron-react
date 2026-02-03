@@ -1,1 +1,1 @@
-/run/media/naranyala/Data/projects-remote/starter-rsbuild-electron-react/src/main/main.ts
+../main/main.ts

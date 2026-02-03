@@ -1,4 +1,4 @@
-import { TabFilterContainer, TabFilterInner, TabItem } from '@renderer/styles';
+import { TabFilterContainer, TabFilterInner, TabItem } from '@renderer/lib/styled';
 import clsx from 'clsx';
 import type { ComponentPropsWithoutRef } from 'react';
 import { Component } from 'react';
@@ -44,7 +44,7 @@ class TabFilter extends Component<TabFilterProps, TabFilterState> {
             <TabItem
               key={tab.id}
               type="button"
-              isActive={currentActiveTab === tab.id}
+              $isActive={currentActiveTab === tab.id}
               onClick={() => this.handleTabClick(tab.id)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {

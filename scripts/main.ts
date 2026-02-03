@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
 import { buildIcons } from './build-icons-new';
-import { startDevServer } from './start-dev-rsbuild-new';
-import { startParcelDevServer } from './start-dev-new';
 import { checkElectronInstallation } from './check-electron-new';
-import { Logger, LogLevel } from './utils/logger';
+import { startParcelDevServer } from './start-dev-new';
+import { startDevServer } from './start-dev-rsbuild-new';
 import { ErrorHandler } from './utils/error-handler';
+import { Logger, LogLevel } from './utils/logger';
 
 /**
  * Main script entry point that handles different commands
@@ -25,24 +25,24 @@ async function main(): Promise<void> {
       case 'build-icons':
         await buildIcons();
         break;
-        
+
       case 'start-dev-rsbuild':
         await startDevServer();
         break;
-        
+
       case 'start-dev':
         await startParcelDevServer();
         break;
-        
+
       case 'check-electron':
         await checkElectronInstallation();
         break;
-        
+
       case '--help':
       case '-h':
         showHelp();
         break;
-        
+
       default:
         Logger.error(`Unknown command: ${command}`);
         showHelp();

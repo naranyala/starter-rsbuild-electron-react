@@ -9,12 +9,12 @@ export class ErrorHandler {
    * Handles an error with proper logging and cleanup
    */
   static handleError(error: unknown, context: string = 'Unknown'): void {
-    const errorMessage = this.formatError(error);
-    
+    const errorMessage = ErrorHandler.formatError(error);
+
     Logger.error(`${context} - ${errorMessage}`);
-    
+
     // Perform any necessary cleanup here
-    this.performCleanup();
+    ErrorHandler.performCleanup();
   }
 
   /**
@@ -24,11 +24,11 @@ export class ErrorHandler {
     if (error instanceof Error) {
       return `${error.name}: ${error.message}`;
     }
-    
+
     if (typeof error === 'string') {
       return error;
     }
-    
+
     return `Unknown error: ${JSON.stringify(error)}`;
   }
 
@@ -50,7 +50,7 @@ export class ErrorHandler {
     try {
       return await operation();
     } catch (error) {
-      this.handleError(error, context);
+      ErrorHandler.handleError(error, context);
       return null;
     }
   }
