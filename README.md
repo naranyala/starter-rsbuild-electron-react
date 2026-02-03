@@ -1,154 +1,96 @@
-# Enterprise-Grade Electron + React Development Platform
+# Electron + React + Rsbuild Starter
 
-Transform your desktop application vision into reality with our comprehensive starter kit. This production-ready platform eliminates setup overhead and accelerates development cycles, enabling teams to focus on building exceptional user experiences rather than configuring infrastructure.
+A production-leaning Electron desktop app starter with a fast Rsbuild pipeline, a modular use-case system, and a clean process boundary. It is designed to get teams shipping quickly while keeping the main process, preload, and renderer responsibilities crisp and maintainable.
 
-## Why Choose Our Platform?
+## Highlights
+- Fast dev loop with Rsbuild and hot reloading
+- Electron 40 + React 19 + TypeScript
+- Secure preload bridge with a curated IPC surface
+- Modular renderer use-cases that open WinBox windows
+- Window manager utilities for multi-window workflows
+- Electron-builder packaging for Windows, macOS, and Linux
+- Opinionated code organization with clean path aliases
 
-### Accelerated Time-to-Market
-Deploy cross-platform desktop applications in days, not months. Our pre-configured architecture eliminates weeks of setup and configuration, allowing your team to begin building features immediately.
+## What You Get
+- A React renderer with a searchable use-case menu and WinBox windows
+- A main process with IPC handlers for files, app actions, and window control
+- A preload bridge that exposes a typed `window.electronAPI`
+- Build scripts for icons, development, and packaging
 
-### Enterprise-Ready Architecture
-Built with scalability in mind, our modular architecture supports complex applications with thousands of users. The use-case system ensures clean separation of concerns, making maintenance and expansion straightforward.
-
-### Superior Performance
-Powered by Rsbuild, our platform delivers lightning-fast build times and optimized bundles. Experience near-instantaneous hot module replacement during development and efficient production builds.
-
-### Cross-Platform Excellence
-Reach users on Windows, macOS, and Linux with a single codebase. Our platform ensures consistent user experience across all operating systems while maintaining native performance characteristics.
-
-### Professional Developer Experience
-Comprehensive tooling including automated linting, type checking, and formatting ensures code quality. Pre-configured path aliases and integrated development workflows maximize productivity.
-
-## Technical Specifications
-
-### Core Technologies
-- **Frontend Framework**: React 19 with TypeScript
-- **Desktop Runtime**: Electron 40
-- **Build System**: Rsbuild with optimized configurations
-- **Styling Solution**: Styled Components with CSS-in-JS
-- **Window Management**: Advanced WinBox integration
-- **IPC System**: Automated inter-process communication
-
-### Development Features
-- Hot Module Replacement for instant feedback
-- Comprehensive type safety with TypeScript
-- Automated code formatting and linting
-- Pre-configured path aliases for clean imports
-- Modular use-case architecture
-- Secure IPC communication patterns
-
-### Deployment Capabilities
-- Cross-platform packaging with electron-builder
-- Optimized production builds
-- Automated distribution preparation
-- Platform-specific installer generation
-- Asset optimization and compression
-
-## Getting Started
-
-### System Requirements
-- Node.js version 18.x or higher
-- Bun package manager (recommended) or npm
-- Git version control system
-
-### Installation Process
-Execute these commands to initialize your development environment:
-
+## Quick Start
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd starter-rsbuild-electron-react
-
 # Install dependencies
 bun install
-# Alternative with npm
+# or
 npm install
-```
 
-### Launch Development Environment
-Begin development with a single command:
-
-```bash
-# Start development server with hot reloading
+# Start dev (rsbuild + Electron)
 bun run dev
-# Alternative with npm
-npm run dev
-```
 
-### Production Deployment
-Prepare your application for distribution:
-
-```bash
-# Create optimized production build
+# Build renderer + main
 bun run build
 
-# Package for cross-platform distribution
+# Package for distribution
 bun run dist
 ```
 
-## Architecture Overview
+## Architecture At A Glance
+- Main process: `src/main/` handles app lifecycle, windows, and IPC
+- Preload: `src/preload/preload.ts` exposes safe APIs to the renderer
+- Renderer: `src/renderer/` is the React app and use-case system
 
-Our platform implements a sophisticated modular architecture that separates business logic from presentation layers:
-
-- **Frontend Use-Cases**: Self-contained, configurable window components with isolated state management
-- **Backend Services**: Main process handlers with secure IPC communication
-- **Registry System**: Centralized component discovery and lifecycle management
-- **Auto Registration**: Seamless integration between frontend and backend services
+WinBox is used in the renderer to create windowed experiences inside the app UI.
 
 ## Project Structure
-
 ```
 src/
-├── electron-main/          # Main process implementation
-│   ├── use-cases/          # Backend service handlers
-│   ├── lib/                # Core utilities
-│   └── main.ts             # Application entry point
-├── electron-preload/       # Secure preload scripts
-├── renderer/               # React application layer
-│   ├── use-cases/          # Frontend modules
-│   ├── components/         # Reusable UI components
-│   ├── styles/             # Global styling
-│   └── index.tsx           # Client-side entry
-└── assets/                 # Static resources
+├── main/                  # Electron main process
+├── preload/               # Secure preload bridge
+├── renderer/              # React UI
+│   ├── components/        # UI components
+│   ├── use-cases/          # Modular content + window configs
+│   └── styles.ts          # Goober styling and theme
+├── shared/                # Shared types/utilities
+└── assets/                # Static assets
 ```
 
-## Available Commands
+## Use-Case System
+Renderer use-cases define content, metadata, and window configuration. Each use-case can open a WinBox window and appear in the searchable menu. Main-process use-cases can provide native IPC handlers when needed.
 
+Key locations:
+- Renderer use-cases: `src/renderer/use-cases/`
+- Window factory: `src/renderer/use-cases/window-factory.ts`
+- Menu generation: `src/renderer/data/menu-data.ts`
+
+## IPC and Security
+- IPC handlers live in `src/main/ipc/handlers.ts`
+- Preload bridge lives in `src/preload/preload.ts`
+- Defaults include `contextIsolation: true` and `nodeIntegration: false`
+
+Add new channels by defining handlers in main and exposing them in preload. Avoid direct `ipcRenderer` access in the renderer.
+
+## Scripts
 | Command | Description |
-|---------|-------------|
-| `dev` | Launch development server with live reloading |
-| `build` | Generate optimized production build |
-| `dist` | Create distributable packages for all platforms |
-| `lint` | Execute code quality analysis |
-| `format` | Apply automated code formatting |
-| `type-check` | Validate TypeScript compilation |
-| `check-electron` | Verify Electron installation integrity |
+| --- | --- |
+| `dev` | Start rsbuild dev server and Electron |
+| `dev:parcel` | Legacy Parcel dev flow |
+| `build` | Build renderer and main process |
+| `build:web` | Build renderer only |
+| `build:electron` | Build main process only |
+| `start` | Run Electron from `dist-electron/` |
+| `dist` | Build and package with electron-builder |
+| `lint` | Run Biome checks (with fixes) |
+| `format` | Format with Biome |
+| `type-check` | Run TypeScript with no emit |
+| `check-electron` | Validate Electron installation |
 
-## Competitive Advantages
+## Configuration
+- Rsbuild: `rsbuild.config.ts`
+- Electron builder: `package.json` > `build`
+- TypeScript: `tsconfig.json` and `tsconfig.electron.json`
 
-### Rapid Development Cycles
-Eliminate configuration overhead and begin feature development immediately. Our pre-built solutions handle complex Electron configurations, allowing your team to focus on business value.
-
-### Maintainable Codebase
-The modular architecture ensures long-term maintainability. Clear separation of concerns and consistent patterns make onboarding new developers seamless.
-
-### Performance Optimized
-Built with performance as a priority. Efficient bundling, optimized IPC communication, and memory management ensure smooth user experiences.
-
-### Future-Proof Technology Stack
-Stay current with industry standards. Our platform uses cutting-edge tools and follows best practices that evolve with technological advances.
-
-### Professional Support Structure
-Well-documented architecture with clear upgrade paths. The modular design accommodates new technologies without requiring complete rewrites.
-
-## Ideal For
-
-- Software development teams building cross-platform desktop applications
-- Startups requiring rapid prototyping and deployment
-- Enterprises seeking standardized desktop application development
-- Developers transitioning from web to desktop application development
-- Organizations requiring consistent user experiences across operating systems
+## Docs
+Start at `docs/README.md` for detailed guides, including AI-agent workflow, architecture, IPC, use-cases, packaging, and troubleshooting.
 
 ## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for complete terms and conditions.
+MIT. See `LICENSE`.
