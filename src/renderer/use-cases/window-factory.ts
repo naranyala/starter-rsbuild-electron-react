@@ -13,7 +13,9 @@ interface WinBoxInstance {
   onclose?: () => any;
   // Additional properties for window state management
   id?: string;
+  title?: string;
   minimize?: () => void;
+  maximize?: () => void;
   focus?: () => void;
   isMinimized?: boolean;
   onFocus?: (callback: () => void) => void;
@@ -145,6 +147,14 @@ export function createWindowFromUseCase(
   winbox.minimize = () => {
     isMinimizedState = !isMinimizedState;
     winbox.isMinimized = isMinimizedState;
+
+    // Dispatch event to notify the global store
+    if (typeof window !== 'undefined') {
+      const eventType = isMinimizedState ? 'window-minimized' : 'window-restored';
+      const event = new CustomEvent(eventType, { detail: { id: winbox.id } });
+      window.dispatchEvent(event);
+    }
+
     if (originalMinimize) {
       originalMinimize.call(winbox);
     }
@@ -162,7 +172,22 @@ export function createWindowFromUseCase(
       originalMinimize.call(winbox);
       isMinimizedState = false;
       winbox.isMinimized = isMinimizedState;
+
+      // Dispatch restored event
+      if (typeof window !== 'undefined') {
+        const event = new CustomEvent('window-restored', { detail: { id: winbox.id } });
+        window.dispatchEvent(event);
+      }
     }
+
+    // Dispatch focus event
+    if (typeof window !== 'undefined') {
+      const event = new CustomEvent('focus-window', {
+        detail: { id: winbox.id, title: winbox.title },
+      });
+      window.dispatchEvent(event);
+    }
+
     if (originalFocus) {
       originalFocus.call(winbox);
     }
@@ -185,6 +210,12 @@ export function createWindowFromUseCase(
     // Remove from instances map when closed
     if (winbox.id) {
       windowInstances.delete(winbox.id);
+
+      // Dispatch event to notify the global store
+      if (typeof window !== 'undefined') {
+        const event = new CustomEvent('window-closed', { detail: { id: winbox.id } });
+        window.dispatchEvent(event);
+      }
     }
     return originalClose.call(winbox);
   };
@@ -267,6 +298,28 @@ export function getWindow(id: string): WinBoxInstance | undefined {
 }
 
 /**
+ * Finds a window by title
+ */
+export function getWindowByTitle(title: string): WinBoxInstance | undefined {
+  for (const win of windowInstances.values()) {
+    if (win.title === title) {
+      return win;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Checks if a window exists by ID or title
+ */
+export function windowExists(idOrTitle: string): boolean {
+  if (windowInstances.has(idOrTitle)) {
+    return true;
+  }
+  return getWindowByTitle(idOrTitle) !== undefined;
+}
+
+/**
  * Checks if a window is minimized
  */
 export function isWindowMinimized(id: string): boolean {
@@ -305,6 +358,118 @@ export function minimizeAll(): void {
       window.minimize();
     }
   }
+
+  if (typeof window !== 'undefined') {
+    windowInstances.forEach((win, id) => {
+      const event = new CustomEvent('window-minimized', { detail: { id: id } });
+      window.dispatchEvent(event);
+    });
+  }
+}
+
+/**
+ * Maximizes a window
+ */
+export function maximizeWindow(id: string): boolean {
+  const window = windowInstances.get(id);
+  if (window && window.maximize) {
+    window.maximize();
+    return true;
+  }
+  return false;
+}
+
+const SIDEBAR_WIDTH = 280;
+
+/**
+ * Creates a fullscreen WinBox window that respects the sidebar width
+ * Both the sidebar and window will be visible together
+ */
+export function createFullscreenWindow(
+  id: string,
+  title: string,
+  content?: string
+): WinBoxInstance {
+  const theme = generateDarkTheme(title);
+  const windowHtml = `
+    <div class="winbox-content">
+      <h3 style="color: ${theme.color}; margin-top: 0;">${title}</h3>
+      <div style="color: ${theme.color};" class="winbox-dynamic-content">
+        ${content || `<p>Content for "${title}"</p>`}
+      </div>
+    </div>
+  `;
+
+  const winbox = new WinBox({
+    title: title,
+    html: windowHtml,
+    width: `calc(100vw - ${SIDEBAR_WIDTH}px)`,
+    height: '100vh',
+    x: SIDEBAR_WIDTH,
+    y: 0,
+    class: 'modern dark-theme',
+    background: theme.bg,
+    border: 0,
+    top: 0,
+    left: SIDEBAR_WIDTH,
+  }) as WinBoxInstance;
+
+  winbox.id = id;
+  winbox.title = title;
+
+  let isMinimizedState = false;
+  winbox.isMinimized = isMinimizedState;
+
+  const originalMinimize = (winbox as any).minimize;
+  winbox.minimize = () => {
+    isMinimizedState = !isMinimizedState;
+    winbox.isMinimized = isMinimizedState;
+
+    if (typeof window !== 'undefined') {
+      const eventType = isMinimizedState ? 'window-minimized' : 'window-restored';
+      const event = new CustomEvent(eventType, { detail: { id: winbox.id } });
+      window.dispatchEvent(event);
+    }
+
+    if (originalMinimize) {
+      originalMinimize.call(winbox);
+    }
+  };
+
+  const originalFocus = (winbox as any).focus;
+  winbox.focus = () => {
+    if (typeof window !== 'undefined') {
+      const event = new CustomEvent('focus-window', {
+        detail: { id: winbox.id, title: winbox.title },
+      });
+      window.dispatchEvent(event);
+    }
+    if (originalFocus) {
+      originalFocus.call(winbox);
+    }
+  };
+
+  const originalClose = winbox.close;
+  winbox.close = () => {
+    if (winbox.id) {
+      windowInstances.delete(winbox.id);
+      if (typeof window !== 'undefined') {
+        const event = new CustomEvent('window-closed', { detail: { id: winbox.id } });
+        window.dispatchEvent(event);
+      }
+    }
+    return originalClose.call(winbox);
+  };
+
+  windowInstances.set(winbox.id, winbox);
+
+  setTimeout(() => {
+    if (winbox.maximize) {
+      winbox.maximize();
+    }
+  }, 50);
+
+  return winbox;
 }
 
 export { contentSectionsToHtml, generateDarkTheme };

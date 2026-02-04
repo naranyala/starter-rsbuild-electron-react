@@ -149,15 +149,15 @@ export namespace FileSystemUtils {
     filter?: RegExp;
   } = {}): Promise<string[]> {
     const { recursive = false, includeDirectories = true, filter } = options;
-    
+
     if (recursive) {
       const entries: string[] = [];
       const walk = async (currentDir: string): Promise<void> => {
         const items = await fs.promises.readdir(currentDir, { withFileTypes: true });
-        
+
         for (const item of items) {
           const fullPath = path.join(currentDir, item.name);
-          
+
           if (item.isDirectory()) {
             if (includeDirectories) {
               if (!filter || filter.test(fullPath)) {
@@ -172,11 +172,10 @@ export namespace FileSystemUtils {
           }
         }
       };
-      
+
       await walk(dirPath);
       return entries;
-    };
-      
+    } else {
       const items = await fs.promises.readdir(dirPath);
       return items
         .filter(item => includeDirectories || !item.endsWith(path.sep))

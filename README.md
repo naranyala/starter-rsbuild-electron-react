@@ -1,6 +1,6 @@
-# Electron + React + Rsbuild Starter
+# Secure Electron + React + Rsbuild Starter
 
-A production-leaning Electron desktop app starter with a fast Rsbuild pipeline, a modular use-case system, and a clean process boundary. It is designed to get teams shipping quickly while keeping the main process, preload, and renderer responsibilities crisp and maintainable.
+A production-leaning Electron desktop app starter with a fast Rsbuild pipeline, a modular use-case system, and a clean process boundary. It is designed to get teams shipping quickly while keeping the main process, preload, and renderer responsibilities crisp and maintainable. Features comprehensive security-focused testing and build pipeline.
 
 ## Highlights
 - Fast dev loop with Rsbuild and hot reloading
@@ -91,6 +91,69 @@ Add new channels by defining handlers in main and exposing them in preload. Avoi
 
 ## Docs
 Start at `docs/README.md` for detailed guides, including AI-agent workflow, architecture, IPC, use-cases, packaging, and troubleshooting.
+
+## Security
+
+This starter template includes a comprehensive security-focused testing suite and build pipeline to help maintain application security:
+
+### Security Testing
+- **Input Validation Tests**: Prevents XSS, SQL injection, and other injection attacks
+- **Electron Security Tests**: Validates secure Electron configurations and prevents common vulnerabilities
+- **Dependency Security Tests**: Scans for known vulnerabilities in dependencies
+- **Cryptography Tests**: Validates secure cryptographic implementations
+
+Run security tests with:
+```bash
+# Run all security tests
+bun run test:security
+
+# Run specific security test suites
+bun run test:security:input
+bun run test:security:electron
+bun run test:security:dependencies
+
+# Run security tests with coverage
+bun run test:security:coverage
+```
+
+### Security Scanning
+- **Dependency Auditing**: Automatically scans for known vulnerabilities
+- **Code Scanning**: Identifies potential security issues in source code
+- **Secret Detection**: Finds hardcoded credentials and secrets
+
+Use security scanning tools:
+```bash
+# Audit dependencies for vulnerabilities
+bun run security:audit
+
+# Run comprehensive security scan
+bun run security:scan
+
+# Deep security scan with detailed reporting
+bun run security:deep
+```
+
+### CI/CD Security
+The build pipeline includes security checks for different stages:
+```bash
+# Run security checks in CI
+bun run security:ci
+
+# Security checks for pull requests
+bun run security:pr
+
+# Security checks for releases
+bun run security:release
+```
+
+### Security Best Practices
+- Context isolation is enabled by default
+- Node integration is disabled in renderer processes
+- CSP headers are properly configured
+- Secure IPC communication patterns
+- Input validation on all user inputs
+
+For more details on security policies, see `SECURITY.md`.
 
 ## License
 MIT. See `LICENSE`.

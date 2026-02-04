@@ -53,4 +53,12 @@ export const allElectronUseCases = [
 ];
 
 // Export window factory functions
-export { createWindowFromMenuItem } from './window-factory';
+export {
+  createFullscreenWindow,
+  createWindowFromMenuItem,
+  getWindow,
+  getWindowByTitle,
+  maximizeWindow,
+  minimizeAll,
+  windowExists,
+} from './window-factory';

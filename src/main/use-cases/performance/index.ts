@@ -2,7 +2,7 @@
  * Performance monitoring use-cases for backend
  */
 
-import { LogUtils, PerformanceUtils } from '../../lib/main-utils';
+import { LogUtils, PerformanceUtils, SystemUtils } from '../../lib/main-utils';
 
 export interface PerformanceMetrics {
   memory: NodeJS.MemoryUsage;
@@ -35,7 +35,7 @@ export const getPerformanceMetricsUseCase = {
     return {
       memory,
       cpu,
-      uptime: PerformanceUtils.getUptime(),
+      uptime: SystemUtils.getUptime(),
       timestamp: Date.now(),
     };
   },

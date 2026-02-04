@@ -138,6 +138,10 @@ export const AppContainer = gooberStyled('div')`
   max-width: 100vw;
   overflow-x: hidden;
   position: relative;
+
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    flex-direction: column;
+  }
 `;
 
 export const SidebarContainer = gooberStyled('aside')`
@@ -151,6 +155,86 @@ export const SidebarContainer = gooberStyled('aside')`
   background-color: ${theme.colors.bgSecondary};
   display: flex;
   flex-direction: column;
+
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 100;
+
+    &.sidebar-hidden {
+      transform: translateX(-100%);
+    }
+
+    &:not(.sidebar-hidden) {
+      transform: translateX(0);
+    }
+  }
+`;
+
+export const SidebarToggle = gooberStyled('button')`
+  position: fixed;
+  top: ${theme.spacing.md};
+  left: ${theme.spacing.md};
+  z-index: 101;
+  background: ${theme.colors.bgTertiary};
+  border: 1px solid ${theme.colors.border};
+  color: ${theme.colors.textPrimary};
+  cursor: pointer;
+  padding: ${theme.spacing.sm};
+  border-radius: ${theme.borderRadius.sm};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+
+  @media (min-width: ${theme.breakpoints.mobile}) {
+    display: none;
+  }
+
+  &:hover {
+    background-color: ${theme.colors.cardHover};
+  }
+`;
+
+export const SidebarWrapper = gooberStyled('div')<{ $isOpen: boolean; $isMobile: boolean }>`
+  width: ${(props) => (props.$isMobile ? '100%' : `${theme.sidebar.width}px`)};
+  position: ${(props) => (props.$isMobile ? 'fixed' : 'relative')};
+  z-index: ${(props) => (props.$isMobile ? 100 : 'auto')};
+  transform: ${(props) => (props.$isMobile && !props.$isOpen ? 'translateX(-100%)' : 'none')};
+  transition: transform 0.3s ease;
+  height: ${(props) => (props.$isMobile ? 'auto' : '100vh')};
+`;
+
+export const SidebarWindowTitleSpan = gooberStyled('span')`
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+export const MinimizeAllButton = gooberStyled('button')<SidebarWindowBtnProps>`
+  margin-top: ${theme.spacing.sm};
+  background: ${theme.colors.bgTertiary} !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px ${theme.spacing.md};
+  margin-bottom: ${theme.spacing.xs};
+  border: none;
+  border-radius: ${theme.borderRadius.sm};
+  color: ${theme.colors.textPrimary};
+  cursor: pointer;
+  font-size: 13px;
+  transition: background-color 0.2s ease;
+  text-align: left;
+
+  &:hover {
+    background: ${theme.colors.cardHover} !important;
+  }
 `;
 
 export const MainContainer = gooberStyled('main')`
@@ -159,6 +243,20 @@ export const MainContainer = gooberStyled('main')`
   min-height: 100vh;
   position: relative;
   z-index: 5;
+
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    margin-left: 0;
+    width: 100%;
+  }
+`;
+
+export const ResponsiveMainContainer = gooberStyled('main')<{ $isMobile: boolean }>`
+  flex: 1;
+  margin-left: ${(props) => (props.$isMobile ? '0' : `${theme.sidebar.width}px`)};
+  min-height: 100vh;
+  position: relative;
+  z-index: 5;
+  width: ${(props) => (props.$isMobile ? '100%' : 'calc(100% - 280px)')};
 `;
 
 export const WinboxContainer = gooberStyled('div')`
@@ -171,12 +269,20 @@ export const WinboxContainer = gooberStyled('div')`
   pointer-events: none;
   overflow: hidden;
 
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    left: 0;
+  }
+
   & .wb {
     position: absolute !important;
     pointer-events: auto;
     z-index: 101 !important;
     max-width: calc(100vw - ${theme.sidebar.width}px) !important;
     left: unset !important;
+
+    @media (max-width: ${theme.breakpoints.mobile}) {
+      max-width: 100vw !important;
+    }
   }
 
   & .wb.max {
@@ -186,6 +292,10 @@ export const WinboxContainer = gooberStyled('div')`
     height: 100vh !important;
     max-width: unset !important;
     z-index: 102 !important;
+
+    @media (max-width: ${theme.breakpoints.mobile}) {
+      width: 100vw !important;
+    }
   }
 
   & .wb.min {
@@ -304,27 +414,6 @@ export const SidebarEmpty = gooberStyled('div')`
   font-size: 12px;
 `;
 
-export const SidebarToggle = gooberStyled('button')`
-  position: fixed;
-  top: ${theme.spacing.md};
-  left: ${theme.spacing.md};
-  z-index: 101;
-  background: ${theme.colors.bgTertiary};
-  border: 1px solid ${theme.colors.border};
-  color: ${theme.colors.textPrimary};
-  cursor: pointer;
-  padding: ${theme.spacing.sm};
-  border-radius: ${theme.borderRadius.sm};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s ease;
-
-  &:hover {
-    background-color: ${theme.colors.cardHover};
-  }
-`;
-
 export const SidebarBackdrop = gooberStyled('button')`
   position: fixed;
   top: 0;
@@ -346,7 +435,7 @@ export const MainNoNavbar = gooberStyled('div')`
   max-width: 100%;
   margin: 0 auto;
   flex: 1;
-  width: calc(100% - 40px);
+  width: 100%;
 `;
 
 export const SearchContainer = gooberStyled('div')`

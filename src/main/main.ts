@@ -28,7 +28,7 @@ async function createWindow() {
     height: appConfig.mainWindow.height,
     minWidth: appConfig.mainWindow.minWidth,
     minHeight: appConfig.mainWindow.minHeight,
-    title: 'Electron App',
+    title: appConfig.mainWindow.title,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,

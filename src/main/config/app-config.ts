@@ -6,6 +6,7 @@ export interface AppConfig {
     height: number;
     minWidth: number;
     minHeight: number;
+    title: string;
   };
 }
 
@@ -15,5 +16,6 @@ export const appConfig: AppConfig = {
     height: 768,
     minWidth: 800,
     minHeight: 600,
+    title: 'Secure Electron App',
   },
 };

@@ -12,17 +12,17 @@ export function spawnProcess(
   args: string[],
   options: { stdio?: any; env?: any } = {}
 ): ChildProcess {
-  const process = spawn(command, args, {
+  const spawnedProcess = spawn(command, args, {
     stdio: options.stdio || 'pipe',
     env: options.env || process.env,
   });
 
   // Handle process errors
-  process.on('error', (err) => {
+  spawnedProcess.on('error', (err) => {
     console.error(`Failed to spawn process: ${command}`, err);
   });
 
-  return process;
+  return spawnedProcess;
 }
 
 /**

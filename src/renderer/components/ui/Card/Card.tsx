@@ -1,6 +1,6 @@
 import { SimpleCard, SimpleCardTitle } from '@renderer/lib/styled';
 import type { CardProps } from '@renderer/types';
-import { createWindowFromMenuItem, type UseCase, useCaseRegistry } from '@renderer/use-cases';
+import { createFullscreenWindow, type UseCase, useCaseRegistry } from '@renderer/use-cases';
 import { Component } from 'react';
 
 interface CardState {
@@ -33,11 +33,12 @@ class Card extends Component<CardProps, CardState> {
 
     try {
       if (useCase) {
-        await createWindowFromMenuItem(id || '', title);
+        await createFullscreenWindow(id || '', title);
       } else {
-        await createWindowFromMenuItem(id || '', title, content);
+        await createFullscreenWindow(id || '', title, content);
       }
 
+      // Dispatch event to notify the global store
       const globalWindow = typeof window !== 'undefined' ? window : ({} as Window);
       const event = new CustomEvent('focus-window', {
         detail: { id: id || '', title },

@@ -26,6 +26,7 @@ export interface WindowConfig {
   minimizable?: boolean;
   closable?: boolean;
   frame?: boolean;
+  title?: string;
   titleBarStyle?: 'default' | 'hidden' | 'hiddenInset' | 'customButtonsOnHover';
   trafficLightPosition?: { x: number; y: number };
   backgroundColor?: string;
@@ -75,6 +76,7 @@ export class WindowManager {
       minimizable: config.minimizable ?? true,
       closable: config.closable ?? true,
       frame: config.frame,
+      title: config.title ?? 'Secure Electron App',
       titleBarStyle: config.titleBarStyle,
       trafficLightPosition: config.trafficLightPosition,
       backgroundColor: config.backgroundColor,

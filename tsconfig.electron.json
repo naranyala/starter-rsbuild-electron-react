@@ -35,6 +35,6 @@
     },
     "types": ["node"]
   },
-  "include": ["src/main/**/*", "src/preload/**/*"],
-  "exclude": ["node_modules", "dist", "dist-electron"]
+  "include": ["src/main/**/*", "src/preload/**/*", "scripts/**/*"],
+  "exclude": ["node_modules", "dist", "dist-electron", "tests"]
 }
