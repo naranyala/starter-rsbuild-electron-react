@@ -7,7 +7,6 @@
 
 ## Key Commands
 - `bun run dev` starts rsbuild + Electron with HMR
-- `bun run dev:parcel` starts the legacy parcel dev flow
 - `bun run build` builds renderer and main process
 - `bun run build:web` builds the renderer only
 - `bun run build:electron` builds the Electron main process only
@@ -15,7 +14,7 @@
 - `bun run dist` builds and packages via electron-builder
 - `bun run lint` runs Biome checks (with fixes)
 - `bun run format` formats with Biome
-- `bun run type-check` runs TypeScript with no emit
+- `bun run type-check` runs TypeScript with noEmit
 
 ## Dev Flow Details
 The dev script starts rsbuild on a random available port and passes it to Electron as:

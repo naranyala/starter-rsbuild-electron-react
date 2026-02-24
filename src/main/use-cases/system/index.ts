@@ -2,7 +2,7 @@
  * System management use-cases for backend
  */
 
-import { PerformanceUtils, SystemUtils } from '../../lib/main-utils';
+import { PerformanceUtils, SystemUtils } from '../../lib/utils';
 
 export interface SystemInfo {
   platform: string;

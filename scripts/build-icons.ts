@@ -1,44 +1,55 @@
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { ErrorHandler } from './utils/error-handler';
+import { copyFile, ensureDir, fileExists, joinProjectPath } from './utils/fs-utils';
+import { Logger } from './utils/logger';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+/**
+ * Script to build/copy icon files to dist directory
+ */
 
-// Copy icon files to dist directory
-function copyIcons(): void {
-  const assetsDir = path.join(__dirname, '..', 'src', 'assets');
-  const distDir = path.join(__dirname, '..', 'dist');
+async function buildIcons(): Promise<void> {
+  try {
+    Logger.info('Starting icon build process...');
 
-  // Ensure dist directory exists
-  if (!fs.existsSync(distDir)) {
-    fs.mkdirSync(distDir, { recursive: true });
-  }
+    const assetsDir = joinProjectPath('src', 'assets');
+    const distDir = joinProjectPath('dist');
 
-  // Copy icon files
-  const iconFiles = ['icon.ico', 'favicon.ico']; // Also copy favicon
+    // Ensure dist directory exists
+    ensureDir(distDir);
 
-  // Copy icon.ico as icon.png for electron-builder compatibility
-  const sourceIconPath = path.join(assetsDir, 'icon.ico');
-  const pngIconPath = path.join(distDir, 'icon.png');
+    // Copy icon files
+    const iconFiles = ['icon.ico', 'favicon.ico'];
 
-  if (fs.existsSync(sourceIconPath)) {
-    // Copy icon.ico to icon.png (same format works for both)
-    fs.copyFileSync(sourceIconPath, pngIconPath);
-    console.log(`Copied ${sourceIconPath} to ${pngIconPath} (for electron-builder)`);
-  }
+    // Copy icon.ico as icon.png for electron-builder compatibility
+    const sourceIconPath = joinProjectPath('src', 'assets', 'icon.ico');
+    const pngIconPath = joinProjectPath('dist', 'icon.png');
 
-  iconFiles.forEach((file) => {
-    const sourcePath = path.join(assetsDir, file);
-    const destPath = path.join(distDir, file);
-
-    if (fs.existsSync(sourcePath)) {
-      fs.copyFileSync(sourcePath, destPath);
-      console.log(`Copied ${sourcePath} to ${destPath}`);
+    if (fileExists(sourceIconPath)) {
+      copyFile(sourceIconPath, pngIconPath);
     } else {
-      console.warn(`Warning: ${sourcePath} does not exist`);
+      Logger.warn(`Source icon file does not exist: ${sourceIconPath}`);
     }
-  });
+
+    for (const file of iconFiles) {
+      const sourcePath = joinProjectPath('src', 'assets', file);
+      const destPath = joinProjectPath('dist', file);
+
+      if (fileExists(sourcePath)) {
+        copyFile(sourcePath, destPath);
+      } else {
+        Logger.warn(`Source file does not exist: ${sourcePath}`);
+      }
+    }
+
+    Logger.info('Icon build process completed successfully');
+  } catch (error) {
+    ErrorHandler.handleError(error, 'build-icons');
+    process.exitCode = 1;
+  }
 }
 
-copyIcons();
+// Run the build if this file is executed directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+  buildIcons();
+}
+
+export { buildIcons };

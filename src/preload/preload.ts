@@ -53,4 +53,20 @@ contextBridge.exposeInMainWorld('electronAPI', {
     }) => ipcRenderer.invoke('log:write', entry),
     getPath: () => ipcRenderer.invoke('log:getPath'),
   },
+
+  // Event bus operations
+  event: {
+    subscribe: (event: string) => ipcRenderer.invoke('event:subscribe', { event }),
+    unsubscribe: (event: string) => ipcRenderer.invoke('event:unsubscribe', { event }),
+    emit: (event: string, data?: unknown) => ipcRenderer.invoke('event:emit', { event, data }),
+    emitToRenderer: (windowId: number | undefined, event: string, data?: unknown) =>
+      ipcRenderer.invoke('event:emit-to-renderer', { windowId, event, data }),
+    on: (listener: (event: string, data: unknown) => void) => {
+      const handler = (_: unknown, payload: { event: string; data: unknown }) => {
+        listener(payload.event, payload.data);
+      };
+      ipcRenderer.on('event:received', handler);
+      return () => ipcRenderer.removeListener('event:received', handler);
+    },
+  },
 });

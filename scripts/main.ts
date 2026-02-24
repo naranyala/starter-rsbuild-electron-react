@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 
-import { buildIcons } from './build-icons-new';
-import { checkElectronInstallation } from './check-electron-new';
-import { startParcelDevServer } from './start-dev-new';
-import { startDevServer } from './start-dev-rsbuild-new';
+import { buildIcons } from './build-icons';
+import { checkElectronInstallation } from './check-electron';
+import { startDevServer } from './start-dev-rsbuild';
 import { ErrorHandler } from './utils/error-handler';
 import { Logger, LogLevel } from './utils/logger';
 
@@ -28,10 +27,6 @@ async function main(): Promise<void> {
 
       case 'start-dev-rsbuild':
         await startDevServer();
-        break;
-
-      case 'start-dev':
-        await startParcelDevServer();
         break;
 
       case 'check-electron':
@@ -61,7 +56,6 @@ Usage: node scripts/main.js <command>
 Commands:
   build-icons         Build/copy icon files to dist directory
   start-dev-rsbuild   Start development server with rsbuild and electron
-  start-dev           Start development server with parcel and electron
   check-electron      Check if Electron is properly installed
   --help, -h          Show this help message
 

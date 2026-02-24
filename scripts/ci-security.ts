@@ -488,4 +488,5 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   main();
 }
 
-export { CIPipelineSecurity, CIPipelineConfig };
+export { CIPipelineSecurity };
+export type { CIPipelineConfig };

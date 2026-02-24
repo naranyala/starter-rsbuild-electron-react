@@ -2,7 +2,7 @@
  * File management use-cases for backend
  */
 
-import { FileSystemUtils, SecurityUtils, SystemUtils } from '../../lib/main-utils';
+import { FileSystemUtils, SecurityUtils, SystemUtils } from '../../lib/utils';
 
 export interface FileInfo {
   path: string;

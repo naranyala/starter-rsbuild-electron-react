@@ -639,217 +639,42 @@ export const Footer = gooberStyled('footer')`
 // ============================================================================
 
 export const WinboxContent = gooberStyled('div')`
-  padding: ${theme.spacing.xl};
+  padding: ${theme.spacing.lg};
   max-height: calc(100% - 40px);
   overflow-y: auto;
   font-size: 14px;
   line-height: 1.6;
-  background: ${theme.colors.bgPrimary};
-  color: ${theme.colors.textPrimary};
 
-  &::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: ${theme.colors.bgSecondary};
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: ${theme.colors.border};
-    border-radius: 4px;
-    
-    &:hover {
-      background: ${theme.colors.textSecondary};
-    }
-  }
-
-  & h1, & h2, & h3, & h4, & h5, & h6 {
+  & h3 {
     margin: 0 0 ${theme.spacing.md} 0;
-    color: ${theme.colors.textPrimary};
+    font-size: 18px;
     font-weight: 600;
   }
 
-  & h1 {
-    font-size: 24px;
-    padding-bottom: ${theme.spacing.sm};
-    border-bottom: 2px solid ${theme.colors.accent};
-  }
-
-  & h2 {
-    font-size: 20px;
-  }
-
-  & h3 {
-    font-size: 18px;
-  }
-
   & h4 {
-    font-size: 16px;
-    margin: ${theme.spacing.lg} 0 ${theme.spacing.sm} 0;
+    margin: ${theme.spacing.md} 0 ${theme.spacing.sm} 0;
+    font-size: 15px;
+    font-weight: 600;
   }
 
   & p {
-    margin: 0 0 ${theme.spacing.md} 0;
+    margin: 0 0 ${theme.spacing.sm} 0;
     color: ${theme.colors.textSecondary};
   }
 
-  & a {
-    color: ${theme.colors.accent};
-    text-decoration: none;
-    
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-
-  & ul, & ol {
+  & ul {
     margin: ${theme.spacing.sm} 0;
-    padding-left: 24px;
+    padding-left: 20px;
   }
 
   & li {
-    margin: 8px 0;
+    margin: 4px 0;
     color: ${theme.colors.textSecondary};
-  }
-
-  & code {
-    background: ${theme.colors.bgTertiary};
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: 'Consolas', 'Monaco', monospace;
-    font-size: 13px;
-  }
-
-  & pre {
-    background: ${theme.colors.bgSecondary};
-    padding: ${theme.spacing.md};
-    border-radius: ${theme.borderRadius.md};
-    overflow-x: auto;
-    border: 1px solid ${theme.colors.border};
-
-    & code {
-      background: transparent;
-      padding: 0;
-    }
-  }
-
-  & hr {
-    border: none;
-    border-top: 1px solid ${theme.colors.border};
-    margin: ${theme.spacing.lg} 0;
-  }
-
-  & blockquote {
-    border-left: 4px solid ${theme.colors.accent};
-    margin: ${theme.spacing.md} 0;
-    padding: ${theme.spacing.sm} ${theme.spacing.md};
-    background: ${theme.colors.bgSecondary};
-    border-radius: 0 ${theme.borderRadius.sm} ${theme.borderRadius.sm} 0;
-    
-    & p {
-      margin: 0;
-    }
   }
 `;
 
 export const WinboxDynamicContent = gooberStyled('div')`
   color: inherit;
-`;
-
-export const WinboxCard = gooberStyled('div')`
-  background: ${theme.colors.bgSecondary};
-  border: 1px solid ${theme.colors.border};
-  border-radius: ${theme.borderRadius.md};
-  padding: ${theme.spacing.lg};
-  margin-bottom: ${theme.spacing.md};
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
-
-  &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-`;
-
-export const WinboxCardHeader = gooberStyled('div')`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: ${theme.spacing.md};
-  padding-bottom: ${theme.spacing.sm};
-  border-bottom: 1px solid ${theme.colors.border};
-
-  & h3, & h4 {
-    margin: 0;
-    padding: 0;
-  }
-`;
-
-export const WinboxSection = gooberStyled('section')`
-  margin-bottom: ${theme.spacing.xl};
-`;
-
-export const WinboxGrid = gooberStyled('div')`
-  display: grid;
-  gap: ${theme.spacing.md};
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-`;
-
-export const WinboxButton = gooberStyled('button')`
-  background: ${theme.colors.accent};
-  color: white;
-  border: none;
-  padding: ${theme.spacing.sm} ${theme.spacing.lg};
-  border-radius: ${theme.borderRadius.sm};
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
-
-  &:hover {
-    filter: brightness(1.1);
-  }
-
-  &:active {
-    transform: scale(0.98);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
-
-export const WinboxInput = gooberStyled('input')`
-  width: 100%;
-  padding: ${theme.spacing.sm} ${theme.spacing.md};
-  border: 1px solid ${theme.colors.border};
-  border-radius: ${theme.borderRadius.sm};
-  font-size: 14px;
-  background: ${theme.colors.bgPrimary};
-  color: ${theme.colors.textPrimary};
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-
-  &:focus {
-    outline: none;
-    border-color: ${theme.colors.accent};
-    box-shadow: 0 0 0 3px ${theme.colors.accent}20;
-  }
-
-  &::placeholder {
-    color: ${theme.colors.textSecondary};
-  }
-`;
-
-export const WinboxBadge = gooberStyled('span')`
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-  background: ${theme.colors.accent}20;
-  color: ${theme.colors.accent};
 `;
 
 // ============================================================================

@@ -19,21 +19,12 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@renderer/*": ["src/renderer/*"],
-      "@renderer/components/*": ["src/renderer/components/*"],
-      "@renderer/types/*": ["src/renderer/types/*"],
-      "@renderer/utils/*": ["src/renderer/utils/*"],
-      "@renderer/lib/*": ["src/renderer/lib/*"],
-      "@renderer/hooks/*": ["src/renderer/hooks/*"],
-      "@renderer/data/*": ["src/renderer/data/*"],
-      "@renderer/use-cases/*": ["src/renderer/use-cases/*"],
       "@main/*": ["src/main/*"],
-      "@main/lib/*": ["src/main/lib/*"],
-      "@main/use-cases/*": ["src/main/use-cases/*"],
-      "@main/ipc/*": ["src/main/ipc/*"],
-      "@shared/*": ["src/shared/*"]
+      "@renderer/*": ["src/renderer/*"],
+      "@shared/*": ["src/shared/*"],
+      "@preload/*": ["src/preload/*"]
     }
   },
-  "include": ["src/**/*", "tests/**/*", "rsbuild.config.ts", "scripts/**/*", "types/**/*"],
-  "exclude": ["node_modules", "dist", "build"]
+  "include": ["src/**/*", "rsbuild.config.ts", "scripts/**/*", "types/**/*"],
+  "exclude": ["node_modules", "dist", "build", "tests"]
 }

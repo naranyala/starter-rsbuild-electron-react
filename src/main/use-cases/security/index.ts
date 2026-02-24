@@ -2,7 +2,7 @@
  * Security use-cases for backend
  */
 
-import { SecurityUtils } from '../../lib/main-utils';
+import { SecurityUtils } from '../../lib/utils';
 
 export interface EncryptionResult {
   encrypted: string;

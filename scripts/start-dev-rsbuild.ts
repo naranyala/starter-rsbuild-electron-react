@@ -61,7 +61,7 @@ class DevServerManager {
 
           this.context.electronProcess = spawnProcess(
             './node_modules/.bin/electron',
-            ['--require', 'tsx', 'src/electron-main/main.ts', '--start-dev'],
+            ['--require', 'tsx', 'src/main/main.ts', '--start-dev'],
             {
               stdio: 'inherit',
               env: {

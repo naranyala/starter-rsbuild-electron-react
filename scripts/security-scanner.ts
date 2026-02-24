@@ -415,4 +415,5 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   main();
 }
 
-export { SecurityScanner, ScanConfig };
+export { SecurityScanner };
+export type { ScanConfig };

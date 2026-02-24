@@ -18,23 +18,13 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@assets/*": ["./src/assets/*"],
-      "@renderer/*": ["./src/renderer/*"],
-      "@renderer/components/*": ["./src/renderer/components/*"],
-      "@renderer/types/*": ["./src/renderer/types/*"],
-      "@renderer/utils/*": ["./src/renderer/utils/*"],
-      "@renderer/lib/*": ["./src/renderer/lib/*"],
-      "@renderer/hooks/*": ["./src/renderer/hooks/*"],
-      "@renderer/data/*": ["./src/renderer/data/*"],
-      "@styles/*": ["./src/styles/*"],
-      "@utils/*": ["./src/utils/*"],
-      "@lib/*": ["./src/lib/*"],
       "@main/*": ["./src/main/*"],
-      "@main/lib/*": ["./src/main/lib/*"],
+      "@renderer/*": ["./src/renderer/*"],
+      "@shared/*": ["./src/shared/*"],
       "@preload/*": ["./src/preload/*"]
     },
     "types": ["node"]
   },
-  "include": ["src/main/**/*", "src/preload/**/*", "scripts/**/*"],
-  "exclude": ["node_modules", "dist", "dist-electron", "tests"]
+  "include": ["src/main/**/*", "src/preload/**/*"],
+  "exclude": ["node_modules", "dist", "dist-electron", "tests", "scripts"]
 }

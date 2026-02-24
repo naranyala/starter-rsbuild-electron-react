@@ -1,30 +1,24 @@
-# Secure Electron + React + Rsbuild Starter
+# Electron + React + Rsbuild Starter
 
-A production-leaning Electron desktop app starter with a fast Rsbuild pipeline, a modular use-case system, and a clean process boundary. It is designed to get teams shipping quickly while keeping the main process, preload, and renderer responsibilities crisp and maintainable. Features comprehensive security-focused testing and build pipeline.
+A production-leaning Electron desktop app starter with a fast Rsbuild pipeline, modular use-case system, dependency injection, event bus, and clean process boundary.
 
 ## Highlights
+
 - Fast dev loop with Rsbuild and hot reloading
 - Electron 40 + React 19 + TypeScript
-- Secure preload bridge with a curated IPC surface
-- Modular renderer use-cases that open WinBox windows
-- Window manager utilities for multi-window workflows
-- Electron-builder packaging for Windows, macOS, and Linux
-- Opinionated code organization with clean path aliases
-
-## What You Get
-- A React renderer with a searchable use-case menu and WinBox windows
-- A main process with IPC handlers for files, app actions, and window control
-- A preload bridge that exposes a typed `window.electronAPI`
-- Build scripts for icons, development, and packaging
+- Dependency Injection (DI) container for main and renderer
+- Event Bus system for cross-process communication
+- Error boundary with modal fallback UI
+- Secure preload bridge with typed IPC surface
+- Comprehensive security testing suite
 
 ## Quick Start
+
 ```bash
 # Install dependencies
 bun install
-# or
-npm install
 
-# Start dev (rsbuild + Electron)
+# Start dev server (Rsbuild + Electron)
 bun run dev
 
 # Build renderer + main
@@ -34,126 +28,39 @@ bun run build
 bun run dist
 ```
 
-## Architecture At A Glance
-- Main process: `src/main/` handles app lifecycle, windows, and IPC
-- Preload: `src/preload/preload.ts` exposes safe APIs to the renderer
-- Renderer: `src/renderer/` is the React app and use-case system
+## Documentation
 
-WinBox is used in the renderer to create windowed experiences inside the app UI.
-
-## Project Structure
-```
-src/
-├── main/                  # Electron main process
-├── preload/               # Secure preload bridge
-├── renderer/              # React UI
-│   ├── components/        # UI components
-│   ├── use-cases/          # Modular content + window configs
-│   └── styles.ts          # Goober styling and theme
-├── shared/                # Shared types/utilities
-└── assets/                # Static assets
-```
-
-## Use-Case System
-Renderer use-cases define content, metadata, and window configuration. Each use-case can open a WinBox window and appear in the searchable menu. Main-process use-cases can provide native IPC handlers when needed.
-
-Key locations:
-- Renderer use-cases: `src/renderer/use-cases/`
-- Window factory: `src/renderer/use-cases/window-factory.ts`
-- Menu generation: `src/renderer/data/menu-data.ts`
-
-## IPC and Security
-- IPC handlers live in `src/main/ipc/handlers.ts`
-- Preload bridge lives in `src/preload/preload.ts`
-- Defaults include `contextIsolation: true` and `nodeIntegration: false`
-
-Add new channels by defining handlers in main and exposing them in preload. Avoid direct `ipcRenderer` access in the renderer.
+- [Architecture](docs/architecture.md) - System architecture overview
+- [Project Structure](docs/structure.md) - File organization and directory layout
+- [Dependency Injection](docs/di.md) - DI container in backend and frontend
+- [Event Bus](docs/event-bus.md) - Cross-process event communication
+- [Error Handling](docs/error-handling.md) - Result type and error patterns
+- [IPC](docs/ipc.md) - Inter-process communication
+- [Use Cases](docs/use-cases.md) - Modular content system
+- [Development](docs/development.md) - Development workflows
+- [Packaging](docs/packaging.md) - Building and distribution
+- [AI Agents](docs/ai-agents.md) - AI agent workflows
+- [Troubleshooting](docs/troubleshooting.md) - Common issues and solutions
 
 ## Scripts
+
 | Command | Description |
-| --- | --- |
-| `dev` | Start rsbuild dev server and Electron |
-| `dev:parcel` | Legacy Parcel dev flow |
-| `build` | Build renderer and main process |
-| `build:web` | Build renderer only |
-| `build:electron` | Build main process only |
-| `start` | Run Electron from `dist-electron/` |
-| `dist` | Build and package with electron-builder |
-| `lint` | Run Biome checks (with fixes) |
-| `format` | Format with Biome |
-| `type-check` | Run TypeScript with no emit |
-| `check-electron` | Validate Electron installation |
+|---------|-------------|
+| `dev` | Start Rsbuild dev server + Electron |
+| `build` | Build renderer + main process |
+| `dist` | Package with electron-builder |
+| `lint` | Run Biome checks |
+| `type-check` | TypeScript validation |
+| `test` | Run tests |
+| `test:security` | Run security tests |
 
 ## Configuration
-- Rsbuild: `rsbuild.config.ts`
-- Electron builder: `package.json` > `build`
-- TypeScript: `tsconfig.json` and `tsconfig.electron.json`
 
-## Docs
-Start at `docs/README.md` for detailed guides, including AI-agent workflow, architecture, IPC, use-cases, packaging, and troubleshooting.
-
-## Security
-
-This starter template includes a comprehensive security-focused testing suite and build pipeline to help maintain application security:
-
-### Security Testing
-- **Input Validation Tests**: Prevents XSS, SQL injection, and other injection attacks
-- **Electron Security Tests**: Validates secure Electron configurations and prevents common vulnerabilities
-- **Dependency Security Tests**: Scans for known vulnerabilities in dependencies
-- **Cryptography Tests**: Validates secure cryptographic implementations
-
-Run security tests with:
-```bash
-# Run all security tests
-bun run test:security
-
-# Run specific security test suites
-bun run test:security:input
-bun run test:security:electron
-bun run test:security:dependencies
-
-# Run security tests with coverage
-bun run test:security:coverage
-```
-
-### Security Scanning
-- **Dependency Auditing**: Automatically scans for known vulnerabilities
-- **Code Scanning**: Identifies potential security issues in source code
-- **Secret Detection**: Finds hardcoded credentials and secrets
-
-Use security scanning tools:
-```bash
-# Audit dependencies for vulnerabilities
-bun run security:audit
-
-# Run comprehensive security scan
-bun run security:scan
-
-# Deep security scan with detailed reporting
-bun run security:deep
-```
-
-### CI/CD Security
-The build pipeline includes security checks for different stages:
-```bash
-# Run security checks in CI
-bun run security:ci
-
-# Security checks for pull requests
-bun run security:pr
-
-# Security checks for releases
-bun run security:release
-```
-
-### Security Best Practices
-- Context isolation is enabled by default
-- Node integration is disabled in renderer processes
-- CSP headers are properly configured
-- Secure IPC communication patterns
-- Input validation on all user inputs
-
-For more details on security policies, see `SECURITY.md`.
+- **Rsbuild**: `rsbuild.config.ts`
+- **Electron Builder**: `package.json` > `build`
+- **TypeScript**: `tsconfig.json`, `tsconfig.electron.json`
+- **Biome**: `biome.json`
 
 ## License
+
 MIT. See `LICENSE`.

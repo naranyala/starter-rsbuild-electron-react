@@ -1,6 +1,5 @@
 import * as path from 'node:path';
-import { app, BrowserWindow, IpcMainInvokeEvent, ipcMain, shell } from 'electron';
-import { getContainer, TYPES } from '../lib/container';
+import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import { logger } from '../lib/logger';
 
 export class WindowService {

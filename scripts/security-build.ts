@@ -282,4 +282,5 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   main();
 }
 
-export { SecurityBuildPipeline, SecurityConfig };
+export { SecurityBuildPipeline };
+export type { SecurityConfig };

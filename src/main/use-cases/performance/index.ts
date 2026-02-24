@@ -2,7 +2,7 @@
  * Performance monitoring use-cases for backend
  */
 
-import { LogUtils, PerformanceUtils, SystemUtils } from '../../lib/main-utils';
+import { LogUtils, PerformanceUtils, SystemUtils } from '../../lib/utils';
 
 export interface PerformanceMetrics {
   memory: NodeJS.MemoryUsage;
