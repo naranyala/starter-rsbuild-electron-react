@@ -1,7 +1,14 @@
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { ErrorHandler } from './utils/error-handler';
-import { Logger, LogLevel } from './utils/logger';
+import { Logger } from './utils/logger';
 import { getAvailablePort, waitForResources } from './utils/network-utils';
-import { killProcess, spawnProcess, waitForProcess } from './utils/process-utils';
+import { killProcess, spawnProcess } from './utils/process-utils';
+
+const __filename = fileURLToPath(import.meta.url);
+const scriptDir = path.dirname(__filename);
+const projectRoot = path.resolve(scriptDir, '..');
 
 /**
  * Starts the development server with rsbuild and electron
@@ -28,9 +35,17 @@ class DevServerManager {
       process.env.PORT = this.context.port.toString();
 
       // Spawn rsbuild dev server with the random port
+      const rsbuildPath = path.join(
+        projectRoot,
+        'node_modules',
+        '@rsbuild',
+        'core',
+        'bin',
+        'rsbuild.js'
+      );
       this.context.rsbuildProcess = spawnProcess(
-        './node_modules/.bin/rsbuild',
-        ['dev', '--port', this.context.port.toString()],
+        process.execPath,
+        [rsbuildPath, 'dev', '--port', this.context.port.toString()],
         { stdio: 'inherit', env: { ...process.env } }
       );
 

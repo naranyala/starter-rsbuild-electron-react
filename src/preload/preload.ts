@@ -42,4 +42,15 @@ contextBridge.exposeInMainWorld('electronAPI', {
     show: () => ipcRenderer.invoke('app:show'),
     getPath: (name: string) => ipcRenderer.invoke('app:get-path', { name }),
   },
+
+  // Logging operations
+  log: {
+    write: (entry: {
+      level: string;
+      message: string;
+      context?: Record<string, unknown>;
+      timestamp: string;
+    }) => ipcRenderer.invoke('log:write', entry),
+    getPath: () => ipcRenderer.invoke('log:getPath'),
+  },
 });

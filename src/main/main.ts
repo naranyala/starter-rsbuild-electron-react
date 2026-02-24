@@ -1,104 +1,92 @@
 import * as path from 'node:path';
-import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { app, BrowserWindow, shell } from 'electron';
-import { registerUseCaseIpcHandlers } from '../renderer/use-cases/ipc-integration';
+import { app } from 'electron';
 import { appConfig } from './config/app-config';
-import { registerIpcHandlers } from './ipc/handlers';
+import { Container, getContainer, setContainer } from './lib/container';
+import { logger } from './lib/logger';
+import { TYPES } from './lib/tokens';
+import { AppService, FileService, WindowService } from './services';
 
-// For ES modules, __dirname is not available, so we need to derive it
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = path.dirname(__filename);
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let mainWindow: BrowserWindow | null;
-
-// Determine if the app is in development mode
 const isDev = process.argv.some((arg) => arg === '--start-dev');
 
-// Disable hardware acceleration to avoid VA-API errors on some systems
-// This must be called before app is ready
-app.disableHardwareAcceleration();
+function setupContainer(): Container {
+  const container = new Container();
+  setContainer(container);
 
-async function createWindow() {
-  // Create the browser window
-  mainWindow = new BrowserWindow({
+  const windowService = new WindowService();
+  const fileService = new FileService();
+  const appService = new AppService(windowService, appConfig);
+
+  container.registerInstance<WindowService>(TYPES.WINDOW_SERVICE, windowService);
+  container.registerInstance<FileService>(TYPES.FILE_SERVICE, fileService);
+  container.registerInstance<AppService>(TYPES.APP_SERVICE, appService);
+  container.registerInstance(TYPES.LOGGER, logger);
+
+  return container;
+}
+
+async function initializeApp(): Promise<void> {
+  const container = getContainer();
+  const windowService = container.resolve<WindowService>(TYPES.WINDOW_SERVICE);
+  const fileService = container.resolve<FileService>(TYPES.FILE_SERVICE);
+  const appService = container.resolve<AppService>(TYPES.APP_SERVICE);
+
+  appService.initialize();
+  appService.registerAppHandlers();
+  fileService.registerHandlers();
+  windowService.registerWindowHandlers();
+
+  const preloadPath = path.join(__dirname, '../preload/preload.js');
+  const iconPath = path.join(__dirname, '../renderer/assets/images/icon.png');
+
+  const mainWindow = windowService.createMainWindow({
     width: appConfig.mainWindow.width,
     height: appConfig.mainWindow.height,
     minWidth: appConfig.mainWindow.minWidth,
     minHeight: appConfig.mainWindow.minHeight,
     title: appConfig.mainWindow.title,
-    webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
-      webSecurity: true,
-      preload: path.join(__dirname, '../preload/preload.js'),
-      sandbox: false,
-      allowRunningInsecureContent: false,
-    },
-    icon: path.join(__dirname, '../renderer/assets/images/icon.png'),
+    preloadPath,
+    iconPath,
   });
 
-  // Load the index.html when not in development
   if (!isDev) {
     const startUrl = path.join(__dirname, '../dist/index.html');
-    mainWindow.loadFile(startUrl);
+    await mainWindow.loadFile(startUrl);
   } else {
-    // Load the url from the dev server when in development mode
     const devUrl = process.env.ELECTRON_START_URL || 'http://localhost:35703';
-    console.log('Loading dev URL:', devUrl); // Debug log
+    logger.info('Loading dev URL:', devUrl);
     try {
       await mainWindow.loadURL(devUrl);
-      console.log('Successfully loaded URL'); // Debug log
+      logger.info('Successfully loaded URL');
     } catch (error) {
-      console.error('Failed to load URL:', error); // Debug log
+      logger.error('Failed to load URL:', error);
       throw error;
     }
-
-    // Don't open DevTools by default in development
-    // Only open when needed for debugging
-    // mainWindow.webContents.openDevTools({ mode: 'detach' });
   }
 
-  // Emitted when the window is closed
-  mainWindow.on('closed', () => {
-    // Dereference the window object
-    mainWindow = null;
+  appService.handleWindowAllClosed(() => {
+    app.quit();
   });
 
-  // Handle navigation to external URLs in the default browser
-  mainWindow.webContents.setWindowOpenHandler((details) => {
-    void shell.openExternal(details.url);
-    return { action: 'deny' };
+  appService.handleActivate(() => {
+    if (!windowService.getMainWindow()) {
+      initializeApp();
+    }
   });
 }
 
-// This method will be called when Electron has finished initialization
+logger.info('Application starting...', { isDev });
+
+app.disableHardwareAcceleration();
+
 app.on('ready', async () => {
-  registerIpcHandlers();
-  registerUseCaseIpcHandlers();
-  createWindow();
+  setupContainer();
+  await initializeApp();
 });
 
-// Quit when all windows are closed
-app.on('window-all-closed', () => {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
-
-app.on('activate', () => {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) {
-    createWindow();
-  }
-});
-
-// Handle app quitting
 app.on('before-quit', () => {
-  // Perform cleanup tasks here if needed
+  logger.info('Application shutting down...');
 });

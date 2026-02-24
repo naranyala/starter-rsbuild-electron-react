@@ -10,11 +10,12 @@ import { type ChildProcess, spawn } from 'node:child_process';
 export function spawnProcess(
   command: string,
   args: string[],
-  options: { stdio?: any; env?: any } = {}
+  options: { stdio?: any; env?: any; shell?: boolean } = {}
 ): ChildProcess {
   const spawnedProcess = spawn(command, args, {
     stdio: options.stdio || 'pipe',
     env: options.env || process.env,
+    shell: options.shell || false,
   });
 
   // Handle process errors
