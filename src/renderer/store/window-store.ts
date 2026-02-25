@@ -3,7 +3,7 @@
  * Manages all active windows and provides centralized state management
  */
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export interface WindowInfo {
   id: string;
@@ -51,7 +51,7 @@ const listeners: Array<() => void> = [];
 
 // Notify all listeners when state changes
 const notifyListeners = () => {
-  listeners.forEach(listener => listener());
+  listeners.forEach((listener) => listener());
 };
 
 // Create the global store
@@ -74,7 +74,7 @@ const windowStore: WindowStore = {
 
   addWindow(window: WindowInfo) {
     // Check if window already exists
-    const existingIndex = globalWindows.findIndex(w => w.id === window.id);
+    const existingIndex = globalWindows.findIndex((w) => w.id === window.id);
     if (existingIndex !== -1) {
       globalWindows[existingIndex] = { ...globalWindows[existingIndex], ...window };
     } else {
@@ -84,27 +84,27 @@ const windowStore: WindowStore = {
   },
 
   removeWindow(id: string) {
-    globalWindows = globalWindows.filter(window => window.id !== id);
-    
+    globalWindows = globalWindows.filter((window) => window.id !== id);
+
     // Update active window if the removed window was active
     if (globalActiveWindowId === id) {
       globalActiveWindowId = globalWindows.length > 0 ? globalWindows[0].id : null;
     }
-    
+
     // Update focused window if the removed window was focused
     if (globalFocusedWindowId === id) {
       globalFocusedWindowId = null;
     }
-    
+
     // Remove from minimized/maximized lists if present
-    globalMinimizedWindows = globalMinimizedWindows.filter(windowId => windowId !== id);
-    globalMaximizedWindows = globalMaximizedWindows.filter(windowId => windowId !== id);
-    
+    globalMinimizedWindows = globalMinimizedWindows.filter((windowId) => windowId !== id);
+    globalMaximizedWindows = globalMaximizedWindows.filter((windowId) => windowId !== id);
+
     notifyListeners();
   },
 
   updateWindow(id: string, updates: Partial<WindowInfo>) {
-    const index = globalWindows.findIndex(window => window.id === id);
+    const index = globalWindows.findIndex((window) => window.id === id);
     if (index !== -1) {
       globalWindows[index] = { ...globalWindows[index], ...updates };
       notifyListeners();
@@ -114,7 +114,7 @@ const windowStore: WindowStore = {
   setActiveWindow(id: string | null) {
     globalActiveWindowId = id;
     if (id) {
-      const windowIndex = globalWindows.findIndex(w => w.id === id);
+      const windowIndex = globalWindows.findIndex((w) => w.id === id);
       if (windowIndex !== -1) {
         globalWindows[windowIndex].lastFocused = new Date();
       }
@@ -125,7 +125,7 @@ const windowStore: WindowStore = {
   setFocusedWindow(id: string | null) {
     globalFocusedWindowId = id;
     if (id) {
-      const windowIndex = globalWindows.findIndex(w => w.id === id);
+      const windowIndex = globalWindows.findIndex((w) => w.id === id);
       if (windowIndex !== -1) {
         globalWindows[windowIndex].lastFocused = new Date();
       }
@@ -137,31 +137,33 @@ const windowStore: WindowStore = {
     if (!globalMinimizedWindows.includes(id)) {
       globalMinimizedWindows.push(id);
     }
-    
+
     // Update window state
-    const index = globalWindows.findIndex(window => window.id === id);
+    const index = globalWindows.findIndex((window) => window.id === id);
     if (index !== -1) {
       globalWindows[index].minimized = true;
     }
-    
+
     // If this was the active window, set active to null or next available
     if (globalActiveWindowId === id) {
-      const nextWindow = globalWindows.find(w => !globalMinimizedWindows.includes(w.id) && w.id !== id);
+      const nextWindow = globalWindows.find(
+        (w) => !globalMinimizedWindows.includes(w.id) && w.id !== id
+      );
       globalActiveWindowId = nextWindow ? nextWindow.id : null;
     }
-    
+
     notifyListeners();
   },
 
   restoreWindow(id: string) {
-    globalMinimizedWindows = globalMinimizedWindows.filter(windowId => windowId !== id);
-    
+    globalMinimizedWindows = globalMinimizedWindows.filter((windowId) => windowId !== id);
+
     // Update window state
-    const index = globalWindows.findIndex(window => window.id === id);
+    const index = globalWindows.findIndex((window) => window.id === id);
     if (index !== -1) {
       globalWindows[index].minimized = false;
     }
-    
+
     notifyListeners();
   },
 
@@ -173,27 +175,27 @@ const windowStore: WindowStore = {
   },
 
   unmaximizeWindow(id: string) {
-    globalMaximizedWindows = globalMaximizedWindows.filter(windowId => windowId !== id);
+    globalMaximizedWindows = globalMaximizedWindows.filter((windowId) => windowId !== id);
     notifyListeners();
   },
 
   focusWindow(id: string) {
     // Update focused window
     globalFocusedWindowId = id;
-    
+
     // Update active window
     globalActiveWindowId = id;
-    
+
     // Remove from minimized list if it was minimized
-    globalMinimizedWindows = globalMinimizedWindows.filter(windowId => windowId !== id);
-    
+    globalMinimizedWindows = globalMinimizedWindows.filter((windowId) => windowId !== id);
+
     // Update window state
-    const index = globalWindows.findIndex(window => window.id === id);
+    const index = globalWindows.findIndex((window) => window.id === id);
     if (index !== -1) {
       globalWindows[index].minimized = false;
       globalWindows[index].lastFocused = new Date();
     }
-    
+
     notifyListeners();
   },
 
@@ -213,22 +215,22 @@ const windowStore: WindowStore = {
   getWindowsByStatus(status: 'active' | 'minimized' | 'maximized'): WindowInfo[] {
     switch (status) {
       case 'active':
-        return globalWindows.filter(window => 
-          !globalMinimizedWindows.includes(window.id) && 
-          window.id === globalActiveWindowId
+        return globalWindows.filter(
+          (window) =>
+            !globalMinimizedWindows.includes(window.id) && window.id === globalActiveWindowId
         );
       case 'minimized':
-        return globalWindows.filter(window => globalMinimizedWindows.includes(window.id));
+        return globalWindows.filter((window) => globalMinimizedWindows.includes(window.id));
       case 'maximized':
-        return globalWindows.filter(window => globalMaximizedWindows.includes(window.id));
+        return globalWindows.filter((window) => globalMaximizedWindows.includes(window.id));
       default:
         return globalWindows;
     }
   },
 
   getWindowById(id: string): WindowInfo | undefined {
-    return globalWindows.find(window => window.id === id);
-  }
+    return globalWindows.find((window) => window.id === id);
+  },
 };
 
 // React hook to use the global store

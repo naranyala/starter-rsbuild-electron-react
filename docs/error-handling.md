@@ -30,18 +30,44 @@ err(error)         // Create error result
 isOk(result)       // Type guard for success
 isErr(result)      // Type guard for error
 map(result, fn)    // Transform success value
-flatmap(result, fn) // Chain operations
+mapErr(result, fn) // Transform error value
 getOrElse(result, default) // Get value or default
+getOrElseFn(result, fn)    // Get value or compute default
 fromTry(fn)        // Wrap sync function
 fromTryAsync(fn)   // Wrap async function
-fromNullable(val, error) // Handle null/undefined
+fromNullable(val)  // Handle null/undefined
 ```
 
-## Backend Services
+## Multi-Layer Error Handling
 
-### FileService
+### 1. Global Process Handlers
 
-Located in `src/main/services/FileService.ts`:
+Located in `src/main/lib/error-handlers.ts`.
+
+```typescript
+setupGlobalErrorHandlers();    // uncaughtException, unhandledRejection
+setupWindowErrorHandlers(win); // render-process-gone, did-fail-load
+setupIpcErrorHandlers();       // IPC error logging
+setupSignalHandlers();         // SIGINT, SIGTERM
+logStartupInfo();             // App version, Electron version
+```
+
+### 2. IPC Input Validation
+
+Located in `src/shared/lib/validation.ts` and `src/main/lib/ipc-validators.ts`.
+
+```typescript
+// Validators for IPC inputs
+validateString(value, field)
+validateNumber(value, field)
+validateObject(value, field, schema)
+validateFilePath(value, field)  // Prevents path traversal
+validateOneOf(value, field, allowed)
+```
+
+### 3. Service Layer
+
+Located in `src/main/services/FileService.ts`.
 
 ```typescript
 class FileError extends Error {
@@ -55,11 +81,40 @@ class FileError extends Error {
 class FileService {
   async readFile(path: string): Promise<FileResult<string>>
   async writeFile(path: string, data: string): Promise<FileResult<void>>
-  // ...
 }
 ```
 
-### Usage
+### 4. React Error Boundary
+
+Located in `src/renderer/lib/error-boundary.tsx`.
+
+```typescript
+// Setup error handlers in main.tsx
+setupRendererErrorHandlers();
+
+// Wrap app in ErrorBoundary
+<ErrorBoundary>
+  <App />
+</ErrorBoundary>
+```
+
+Features:
+- Catches React component errors
+- Displays fallback UI with error message
+- Provides reload button
+- Logs errors to main process
+
+### 5. DevTools Panel
+
+All errors are logged to the integrated DevTools bottom panel:
+- Console errors, warnings, info
+- IPC errors from main process
+- Uncaught exceptions
+- Unhandled promise rejections
+
+## Usage Examples
+
+### Backend Service
 
 ```typescript
 const result = await fileService.readFile('/path/to/file');
@@ -70,57 +125,35 @@ if (result.ok) {
 }
 ```
 
-## Frontend Services
-
-### IPC Result
-
-Located in `src/renderer/lib/ipc-result.ts`:
+### Frontend IPC
 
 ```typescript
-class IpcError extends Error {
-  constructor(
-    message: string,
-    public code: string,
-    public statusCode?: number
-  ) { super(message); this.name = 'IpcError'; }
-}
-
-async function invoke<T>(channel: string, args?: unknown): Promise<IpcResult<T>>
-```
-
-### Usage
-
-```typescript
-import { invoke, isOk } from './lib/ipc-result';
-
-const result = await invoke<string>('fs:read-file', { filePath: '/test.txt' });
-if (isOk(result)) {
-  display(result.value);
+const result = await window.electronAPI.fs.readFile('/test.txt');
+if (result.success) {
+  display(result.data);
 } else {
-  handleError(result.error.code);
+  handleError(result.error);
 }
 ```
 
-## React Error Boundary
+### Manual Error Logging
 
-Located in `src/renderer/components/ui/ErrorBoundary/`.
+```typescript
+import { sendToMainProcess } from './lib/error-boundary';
 
-### Usage
-
-```tsx
-import { ErrorBoundary } from './components/ui/ErrorBoundary';
-
-<ErrorBoundary>
-  <MyComponent />
-</ErrorBoundary>
+sendToMainProcess('error', {
+  message: 'Something went wrong',
+  stack: error.stack,
+  source: 'MyComponent'
+});
 ```
-
-The ErrorBoundary catches render errors and displays a modal with error details and a retry button.
 
 ## Best Practices
 
 1. Use Result types for fallible operations
 2. Always handle both success and error cases
-3. Provide meaningful error codes
-4. Log errors appropriately
-5. Use ErrorBoundary for render errors
+3. Validate all IPC inputs before processing
+4. Use descriptive error codes
+5. Log errors with appropriate context
+6. Use ErrorBoundary for React component errors
+7. Use the DevTools panel to debug issues

@@ -1,19 +1,100 @@
-import { contextBridge, ipcRenderer } from 'electron';
+import { contextBridge, type IpcRendererEvent, ipcRenderer } from 'electron';
 
-// Expose protected methods that allow the renderer process to use
-// the ipcRenderer without exposing the entire object
+const ALLOWED_INVOKE_CHANNELS = new Set([
+  'fs:write-file',
+  'fs:read-file',
+  'fs:file-exists',
+  'fs:delete-file',
+  'fs:list-files',
+  'fs:get-file-stats',
+  'window:create',
+  'window:close',
+  'window:focus',
+  'window:minimize',
+  'window:maximize',
+  'window:toggle-fullscreen',
+  'app:quit',
+  'app:relaunch',
+  'app:hide',
+  'app:show',
+  'app:get-path',
+  'log:write',
+  'log:getPath',
+  'log:query',
+  'event:subscribe',
+  'event:unsubscribe',
+  'event:emit',
+  'event:emit-to-renderer',
+]);
+
+const ALLOWED_SEND_CHANNELS = new Set([
+  'log-error',
+  'log-warn',
+  'log-info',
+  'uncaught-error',
+  'unhandled-rejection',
+]);
+
+const ALLOWED_ON_CHANNELS = new Set([
+  'event:received',
+  'window-minimized',
+  'window-maximized',
+  'window-closed',
+  'app:before-quit',
+]);
+
+function isChannelAllowed(channel: string, allowed: Set<string>): boolean {
+  return allowed.has(channel);
+}
+
+function createInvokeHandler(channel: string, args?: unknown): Promise<unknown> | undefined {
+  if (!isChannelAllowed(channel, ALLOWED_INVOKE_CHANNELS)) {
+    console.error(`[Preload] Blocked invoke to unauthorized channel: ${channel}`);
+    return Promise.reject(new Error(`Channel not allowed: ${channel}`));
+  }
+  return ipcRenderer.invoke(channel, args);
+}
+
+function createSendHandler(channel: string, args?: unknown): void {
+  if (!isChannelAllowed(channel, ALLOWED_SEND_CHANNELS)) {
+    console.error(`[Preload] Blocked send to unauthorized channel: ${channel}`);
+    return;
+  }
+  ipcRenderer.send(channel, args);
+}
+
+function createOnHandler(
+  channel: string,
+  listener: (event: IpcRendererEvent, ...args: unknown[]) => void
+): (() => void) | undefined {
+  if (!isChannelAllowed(channel, ALLOWED_ON_CHANNELS)) {
+    console.error(`[Preload] Blocked listener on unauthorized channel: ${channel}`);
+    return undefined;
+  }
+  ipcRenderer.on(channel, listener);
+  return () => ipcRenderer.removeListener(channel, listener);
+}
+
 contextBridge.exposeInMainWorld('electronAPI', {
-  // IPC communication methods
-  invoke: (channel: string, args?: any) => ipcRenderer.invoke(channel, args),
-  send: (channel: string, args?: any) => ipcRenderer.send(channel, args),
-  on: (channel: string, listener: (event: any, ...args: any[]) => void) =>
-    ipcRenderer.on(channel, listener),
-  once: (channel: string, listener: (event: any, ...args: any[]) => void) =>
-    ipcRenderer.once(channel, listener),
-  removeListener: (channel: string, listener: (event: any, ...args: any[]) => void) =>
-    ipcRenderer.removeListener(channel, listener),
+  invoke: createInvokeHandler,
+  send: createSendHandler,
+  on: createOnHandler,
+  once: (channel: string, listener: (event: IpcRendererEvent, ...args: unknown[]) => void) => {
+    if (!isChannelAllowed(channel, ALLOWED_ON_CHANNELS)) {
+      console.error(`[Preload] Blocked once listener on unauthorized channel: ${channel}`);
+      return;
+    }
+    ipcRenderer.once(channel, listener);
+  },
+  removeListener: (
+    channel: string,
+    listener: (event: IpcRendererEvent, ...args: unknown[]) => void
+  ) => {
+    if (isChannelAllowed(channel, ALLOWED_ON_CHANNELS)) {
+      ipcRenderer.removeListener(channel, listener);
+    }
+  },
 
-  // File system operations
   fs: {
     writeFile: (filePath: string, data: string) =>
       ipcRenderer.invoke('fs:write-file', { filePath, data }),
@@ -24,9 +105,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getFileStats: (filePath: string) => ipcRenderer.invoke('fs:get-file-stats', { filePath }),
   },
 
-  // Window operations
   window: {
-    create: (id: string, config: any) => ipcRenderer.invoke('window:create', { id, config }),
+    create: (id: string, config: Record<string, unknown>) =>
+      ipcRenderer.invoke('window:create', { id, config }),
     close: (id: string) => ipcRenderer.invoke('window:close', { id }),
     focus: (id: string) => ipcRenderer.invoke('window:focus', { id }),
     minimize: (id: string) => ipcRenderer.invoke('window:minimize', { id }),
@@ -34,7 +115,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     toggleFullscreen: (id: string) => ipcRenderer.invoke('window:toggle-fullscreen', { id }),
   },
 
-  // App operations
   app: {
     quit: () => ipcRenderer.invoke('app:quit'),
     relaunch: () => ipcRenderer.invoke('app:relaunch'),
@@ -43,7 +123,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getPath: (name: string) => ipcRenderer.invoke('app:get-path', { name }),
   },
 
-  // Logging operations
   log: {
     write: (entry: {
       level: string;
@@ -52,9 +131,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
       timestamp: string;
     }) => ipcRenderer.invoke('log:write', entry),
     getPath: () => ipcRenderer.invoke('log:getPath'),
+    query: (query: Record<string, unknown>) => ipcRenderer.invoke('log:query', query),
   },
 
-  // Event bus operations
   event: {
     subscribe: (event: string) => ipcRenderer.invoke('event:subscribe', { event }),
     unsubscribe: (event: string) => ipcRenderer.invoke('event:unsubscribe', { event }),
@@ -62,7 +141,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     emitToRenderer: (windowId: number | undefined, event: string, data?: unknown) =>
       ipcRenderer.invoke('event:emit-to-renderer', { windowId, event, data }),
     on: (listener: (event: string, data: unknown) => void) => {
-      const handler = (_: unknown, payload: { event: string; data: unknown }) => {
+      const handler = (_: IpcRendererEvent, payload: { event: string; data: unknown }) => {
         listener(payload.event, payload.data);
       };
       ipcRenderer.on('event:received', handler);

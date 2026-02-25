@@ -22,6 +22,31 @@ class Container {
 }
 ```
 
+### Service Interfaces
+
+Located in `src/main/interfaces.ts`:
+
+```typescript
+export interface IWindowService {
+  createMainWindow(config: WindowConfig): BrowserWindow;
+  createWindow(id: string, config: WindowConfig): BrowserWindow | null;
+  closeWindow(id: string): void;
+  // ...
+}
+
+export interface IFileService {
+  writeFile(filePath: string, data: string): Promise<Result<void, Error>>;
+  readFile(filePath: string): Promise<Result<string, Error>>;
+  // ...
+}
+
+export interface IAppService {
+  initialize(): void;
+  quit(): void;
+  // ...
+}
+```
+
 ### Service Tokens
 
 Located in `src/main/lib/tokens.ts`. Uses Symbol for type-safe tokens:
@@ -44,7 +69,18 @@ Located in `src/main/services/`:
 - **FileService**: File operations with error handling
 - **AppService**: App lifecycle management
 
-### Usage
+### Current Usage
+
+Currently, services are instantiated directly in main.ts:
+
+```typescript
+// src/main/main.ts
+const windowService = new WindowService();
+const fileService = new FileService();
+const appService = new AppService(windowService, appConfig);
+```
+
+### Usage with DI
 
 ```typescript
 import { getContainer, TYPES } from './lib/container';
@@ -94,4 +130,7 @@ const logger = useLogger();
 1. Register services at app startup
 2. Use singletons for shared services
 3. Use tokens (Symbols) for type safety
-4. Avoid circular dependencies
+4. Define service interfaces for testability
+5. Avoid circular dependencies
+6. Use constructor injection for services
+7. Mock services in tests using interfaces

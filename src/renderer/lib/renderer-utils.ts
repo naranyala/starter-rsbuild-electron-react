@@ -23,13 +23,13 @@ export namespace DOMUtils {
    */
   export function createElement(tagName: string, attributes?: Record<string, string>): HTMLElement {
     const element = document.createElement(tagName);
-    
+
     if (attributes) {
       Object.entries(attributes).forEach(([key, value]) => {
         element.setAttribute(key, value);
       });
     }
-    
+
     return element;
   }
 
@@ -43,7 +43,7 @@ export namespace DOMUtils {
     options?: boolean
   ): () => void {
     element.addEventListener(type, listener, options);
-    
+
     return () => {
       element.removeEventListener(type, listener);
     };
@@ -115,7 +115,7 @@ export namespace DOMUtils {
   export function getWindowSize(): { width: number; height: number } {
     return {
       width: window.innerWidth,
-      height: window.innerHeight
+      height: window.innerHeight,
     };
   }
 
@@ -123,7 +123,9 @@ export namespace DOMUtils {
    * Check if device is mobile
    */
   export function isMobile(): boolean {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
   }
 
   /**
@@ -289,7 +291,7 @@ export namespace EventUtils {
     options?: boolean
   ): () => void {
     target.addEventListener(type, listener, options);
-    
+
     return () => {
       target.removeEventListener(type, listener);
     };
@@ -303,12 +305,12 @@ export namespace EventUtils {
     delay: number
   ): (event: Event) => void {
     let timeoutId: number | null = null;
-    
+
     return (Event: Event) => {
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
-      
+
       timeoutId = window.setTimeout(() => {
         handler(Event);
         timeoutId = null;
@@ -328,7 +330,7 @@ export namespace AnimationUtils {
     element.style.opacity = '0';
     element.style.display = 'block';
     element.style.transition = `opacity ${duration}ms ease-in-out`;
-    
+
     return new Promise((resolve) => {
       setTimeout(() => {
         element.style.opacity = '1';
@@ -342,7 +344,7 @@ export namespace AnimationUtils {
    */
   export function fadeOut(element: HTMLElement, duration = 300): Promise<void> {
     element.style.transition = `opacity ${duration}ms ease-in-out`;
-    
+
     return new Promise((resolve) => {
       element.style.opacity = '0';
       setTimeout(resolve, duration + 50);
@@ -366,14 +368,14 @@ export namespace BrowserUtils {
     isEdge: boolean;
   } {
     const ua = navigator.userAgent;
-    
+
     return {
       name: getBrowserName(ua),
       version: getBrowserVersion(ua),
       isChrome: /Chrome/.test(ua),
       isFirefox: /Firefox/.test(ua),
       isSafari: /Safari/.test(ua) && !/Chrome/.test(ua),
-      isEdge: /Edge/.test(ua)
+      isEdge: /Edge/.test(ua),
     };
   }
 
@@ -386,7 +388,7 @@ export namespace BrowserUtils {
     if (ua.includes('Safari')) return 'Safari';
     if (ua.includes('Edge')) return 'Edge';
     if (ua.includes('Opera')) return 'Opera';
-    
+
     return 'Unknown';
   }
 
@@ -394,7 +396,7 @@ export namespace BrowserUtils {
    * Get browser version
    */
   function getBrowserVersion(ua: string): string {
-    const match = ua.match(/(Chrome|Firefox|Safari|Edge|Opera)\/(\\d+)/)
+    const match = ua.match(/(Chrome|Firefox|Safari|Edge|Opera)\/(\\d+)/);
     return match ? match[2] : '0';
   }
 

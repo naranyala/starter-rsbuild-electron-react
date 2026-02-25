@@ -1,4 +1,5 @@
 import { BrowserWindow, type IpcMainInvokeEvent, ipcMain } from 'electron';
+import { logger } from '../lib/logger';
 
 /**
  * Utility functions for IPC communication between main and renderer processes
@@ -25,7 +26,7 @@ export function registerIpcHandler<T = any, R = any>(
         data: result,
       } as IpcResponse<R>;
     } catch (error) {
-      console.error(`IPC Handler Error for channel '${channel}':`, error);
+      logger.error(`IPC Handler Error for channel '${channel}':`, error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error occurred',
@@ -78,5 +79,5 @@ export function sendMessageToWindowById<T = any>(
 export function cleanupIpcHandlers(): void {
   // Currently, Electron doesn't provide a direct way to remove all handlers
   // But we can log for debugging purposes
-  console.log('Cleaning up IPC handlers...');
+  logger.info('Cleaning up IPC handlers...');
 }

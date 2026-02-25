@@ -21,33 +21,31 @@ main/
 │   └── app-config.ts        # App configuration
 ├── ipc/
 │   ├── channels.ts           # IPC channel definitions
-│   ├── handlers.ts          # IPC handler registrations
 │   ├── log-handlers.ts      # Logging IPC handlers
 │   └── event-bus-handlers.ts # Event bus IPC handlers
 ├── lib/
-│   ├── container.ts          # DI container
-│   ├── tokens.ts            # Service tokens
+│   ├── error-handlers.ts    # Global error handlers
+│   ├── ipc-validators.ts    # IPC input validators
 │   ├── logger.ts            # electron-log wrapper
 │   ├── EventBus.ts          # Main process event bus
-│   └── *.ts                # Utilities
+│   └── utils.ts             # Utilities
 ├── services/
-│   ├── index.ts            # Service exports
-│   ├── AppService.ts        # App lifecycle
-│   ├── FileService.ts       # File operations
-│   └── WindowService.ts     # Window management
-├── use-cases/              # Domain use-cases
-├── utils/
-│   └── fs-utils.ts
+│   ├── index.ts             # Service exports
+│   ├── AppService.ts         # App lifecycle
+│   ├── FileService.ts        # File operations
+│   └── WindowService.ts      # Window management
+├── use-cases/
 ├── windows/
 │   └── window-manager.ts
-└── main.ts                 # Entry point
+├── interfaces.ts            # Service interfaces
+└── main.ts                  # Entry point
 ```
 
 ## Preload (`src/preload/`)
 
 ```
 preload/
-└── preload.ts              # contextBridge API
+└── preload.ts               # contextBridge API with channel whitelist
 ```
 
 ## Renderer (`src/renderer/`)
@@ -55,31 +53,32 @@ preload/
 ```
 renderer/
 ├── components/
+│   ├── DevTools/
+│   │   ├── DevToolsBar.tsx  # Tiny bottom bar
+│   │   └── DevToolsPanel.tsx # Full debugging panel
 │   ├── features/
 │   │   └── Main/
 │   └── ui/
 │       ├── Card/
-│       ├── TabFilter/
-│       └── ErrorBoundary/
+│       └── TabFilter/
 ├── data/
 │   └── menu-data.ts
-├── hooks/
 ├── lib/
-│   ├── di.tsx             # React DI context
-│   ├── services.ts         # Service factory
-│   ├── EventBus.ts         # Renderer event bus
-│   ├── logger.ts           # Logger
-│   ├── styled.ts           # Goober styles
-│   └── *.ts
-├── services/
+│   ├── di.tsx               # React DI context
+│   ├── error-boundary.tsx   # React error boundary
+│   ├── EventBus.ts          # Renderer event bus
+│   ├── logger.ts            # Logger
+│   ├── styled.ts            # Goober styles
+│   └── renderer-utils.ts    # Utilities
 ├── store/
-├── styles/
-│   └── theme/
+│   └── window-store.ts      # Window state management
+├── use-cases/
+│   ├── renderer-registry.ts  # Use-case registry
+│   ├── window-factory.ts     # WinBox window creation
+│   ├── window-utils.ts      # Window utilities
+│   └── window-state.ts      # Window state management
 ├── types/
-├── use-cases/             # Content modules
-├── utils/
-├── index.html
-└── main.tsx
+└── main.tsx                 # Entry point
 ```
 
 ## Shared (`src/shared/`)
@@ -89,9 +88,27 @@ shared/
 ├── constants/
 │   └── events.ts
 ├── lib/
-│   └── result.ts          # Result/Either type
+│   ├── result.ts            # Result/Either type
+│   ├── validation.ts        # Input validators
+│   └── common.ts            # Common utilities
 └── types/
-    └── winbox.d.ts
+    ├── event-bus.ts
+    ├── ipc-channels.ts
+    └── result.ts
+```
+
+## Tests (`tests/`)
+
+```
+tests/
+├── backend/                 # Backend tests
+│   ├── ipc-channels.test.ts
+│   └── event-bus.test.ts
+├── frontend/                # Frontend tests
+├── shared/                 # Shared library tests
+│   ├── result.test.ts
+│   └── common.test.ts
+└── security*.test.ts       # Security tests
 ```
 
 ## Key Files
@@ -105,8 +122,16 @@ shared/
 ### Configuration
 
 - `rsbuild.config.ts` - Rsbuild configuration
-- `tsconfig.json` - TypeScript config
+- `tsconfig.json` - TypeScript config for renderer
+- `tsconfig.electron.json` - TypeScript config for Electron
 - `package.json` - Dependencies and scripts
+- `biome.json` - Biome linter/formatter config
+
+## Build Outputs
+
+- Renderer: `dist/`
+- Electron: `dist-electron/`
+- Package: `release/`
 
 ## Potential Improvements
 
@@ -131,7 +156,7 @@ src/renderer/features/
 
 ### 3. Split Large Files
 
-`src/renderer/lib/styled.ts` (~1200 lines) should be split into component-specific files.
+`src/renderer/lib/styled.ts` should be split into component-specific files.
 
 ### 4. Domain Layer
 

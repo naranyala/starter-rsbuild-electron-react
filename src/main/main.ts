@@ -3,6 +3,13 @@ import { fileURLToPath } from 'node:url';
 import { app } from 'electron';
 import { appConfig } from './config/app-config';
 import { registerEventBusHandlers } from './ipc/event-bus-handlers';
+import {
+  logStartupInfo,
+  setupGlobalErrorHandlers,
+  setupIpcErrorHandlers,
+  setupSignalHandlers,
+  setupWindowErrorHandlers,
+} from './lib/error-handlers';
 import { logger } from './lib/logger';
 import { AppService, FileService, WindowService } from './services';
 
@@ -10,6 +17,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const isDev = process.argv.some((arg) => arg === '--start-dev');
+
+setupGlobalErrorHandlers();
+setupIpcErrorHandlers();
+setupSignalHandlers();
+logStartupInfo();
 
 // Initialize services directly (no DI container needed)
 const windowService = new WindowService();
@@ -35,6 +47,8 @@ async function initializeApp(): Promise<void> {
     preloadPath,
     iconPath,
   });
+
+  setupWindowErrorHandlers(mainWindow);
 
   if (!isDev) {
     const startUrl = path.join(__dirname, '../dist/index.html');

@@ -4,6 +4,7 @@
  */
 
 import { ipcMain } from 'electron';
+import { logger } from './lib/logger';
 // No import needed for this placeholder file
 // In a real implementation, we would import from the renderer use-cases
 
@@ -15,7 +16,7 @@ export function registerUseCaseIpcHandlers(): void {
   ipcMain.handle('use-case:execute', async (_event, { id, action, params }) => {
     try {
       // In a real implementation, this would communicate with renderer use-cases
-      console.log(`Executing use-case ${id} with action ${action}`, params);
+      logger.info(`Executing use-case ${id} with action ${action}`, params);
 
       // Return a mock response
       return {
@@ -24,7 +25,7 @@ export function registerUseCaseIpcHandlers(): void {
         timestamp: Date.now(),
       };
     } catch (error) {
-      console.error('Error executing use-case:', error);
+      logger.error('Error executing use-case:', error);
       return {
         success: false,
         error: (error as Error).message,
@@ -33,5 +34,5 @@ export function registerUseCaseIpcHandlers(): void {
   });
 
   // Additional use-case specific handlers would go here
-  console.log('Registered use-case IPC handlers');
+  logger.info('Registered use-case IPC handlers');
 }

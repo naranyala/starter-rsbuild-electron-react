@@ -1,5 +1,6 @@
 import { BrowserWindow, ipcMain } from 'electron';
 import { eventBus } from '../lib/EventBus';
+import { logger } from '../lib/logger';
 
 interface IpcEventPayload {
   event: string;
@@ -43,5 +44,5 @@ export function registerEventBusHandlers(): void {
     }
   );
 
-  console.log('[EventBus] IPC handlers registered');
+  logger.info('[EventBus] IPC handlers registered');
 }

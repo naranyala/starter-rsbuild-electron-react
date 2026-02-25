@@ -3,14 +3,27 @@
  * Comprehensive hook library for efficient React development
  */
 
-import { useState, useEffect, useRef, useCallback, useMemo, useContext, createContext, useReducer, Reducer } from 'react';
+import {
+  createContext,
+  Reducer,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from 'react';
 
 /**
  * State management hooks
  */
 
 // Enhanced useState with persistence
-export function useLocalStorageState<T>(key: string, initialValue: T): [T, (value: T | ((prevValue: T) => T)) => void] {
+export function useLocalStorageState<T>(
+  key: string,
+  initialValue: T
+): [T, (value: T | ((prevValue: T) => T)) => void] {
   const [state, setState] = useState<T>(() => {
     try {
       const item = window.localStorage.getItem(key);
@@ -21,15 +34,18 @@ export function useLocalStorageState<T>(key: string, initialValue: T): [T, (valu
     }
   });
 
-  const setValue = useCallback((value: T | ((prevValue: T) => T)) => {
-    try {
-      const valueToStore = value instanceof Function ? value(state) : value;
-      setState(valueToStore);
-      window.localStorage.setItem(key, JSON.stringify(valueToStore));
-    } catch (error) {
-      console.error(`Error setting localStorage key "${key}":`, error);
-    }
-  }, [key, state]);
+  const setValue = useCallback(
+    (value: T | ((prevValue: T) => T)) => {
+      try {
+        const valueToStore = value instanceof Function ? value(state) : value;
+        setState(valueToStore);
+        window.localStorage.setItem(key, JSON.stringify(valueToStore));
+      } catch (error) {
+        console.error(`Error setting localStorage key "${key}":`, error);
+      }
+    },
+    [key, state]
+  );
 
   return [state, setValue];
 }
@@ -39,30 +55,29 @@ export function useUndoState<T>(initialValue: T) {
   const [history, setHistory] = useState<T[]>([initialValue]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const setState = useCallback((newValue: T | ((prevValue: T) => T)) => {
-    const valueToSet = newValue instanceof Function ? newValue(history[currentIndex]) : newValue;
-    const newHistory = history.slice(0, currentIndex + 1);
-    newHistory.push(valueToSet);
-    setHistory(newHistory);
-    setCurrentIndex(newHistory.length - 1);
-  }, [history, currentIndex]);
+  const setState = useCallback(
+    (newValue: T | ((prevValue: T) => T)) => {
+      const valueToSet = newValue instanceof Function ? newValue(history[currentIndex]) : newValue;
+      const newHistory = history.slice(0, currentIndex + 1);
+      newHistory.push(valueToSet);
+      setHistory(newHistory);
+      setCurrentIndex(newHistory.length - 1);
+    },
+    [history, currentIndex]
+  );
 
   const undo = useCallback(() => {
-    setCurrentIndex(prev => Math.max(prev - 1, 0));
+    setCurrentIndex((prev) => Math.max(prev - 1, 0));
   }, []);
 
   const redo = useCallback(() => {
-    setCurrentIndex(prev => Math.min(prev + 1, history.length - 1));
+    setCurrentIndex((prev) => Math.min(prev + 1, history.length - 1));
   }, [history.length]);
 
   const canUndo = currentIndex > 0;
   const canRedo = currentIndex < history.length - 1;
 
-  return [
-    history[currentIndex],
-    setState,
-    { undo, redo, canUndo, canRedo }
-  ] as const;
+  return [history[currentIndex], setState, { undo, redo, canUndo, canRedo }] as const;
 }
 
 // State with debounced updates
@@ -71,18 +86,21 @@ export function useDebounceState<T>(initialValue: T, delay: number = 300) {
   const [debouncedValue, setDebouncedValue] = useState(initialValue);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const updateValue = useCallback((newValue: T | ((prevValue: T) => T)) => {
-    const resolvedValue = newValue instanceof Function ? newValue(value) : newValue;
-    setValue(resolvedValue);
+  const updateValue = useCallback(
+    (newValue: T | ((prevValue: T) => T)) => {
+      const resolvedValue = newValue instanceof Function ? newValue(value) : newValue;
+      setValue(resolvedValue);
 
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
 
-    timeoutRef.current = setTimeout(() => {
-      setDebouncedValue(resolvedValue);
-    }, delay);
-  }, [value, delay]);
+      timeoutRef.current = setTimeout(() => {
+        setDebouncedValue(resolvedValue);
+      }, delay);
+    },
+    [value, delay]
+  );
 
   useEffect(() => {
     return () => {
@@ -140,7 +158,10 @@ export function useConditionalEffect(
  */
 
 // Memoized callback with automatic dependency tracking
-export function useMemoCallback<T extends (...args: any[]) => any>(callback: T, deps?: React.DependencyList): T {
+export function useMemoCallback<T extends (...args: any[]) => any>(
+  callback: T,
+  deps?: React.DependencyList
+): T {
   return useCallback(callback, deps);
 }
 
@@ -155,7 +176,7 @@ export function useRefreshableMemo<T>(
   const value = useMemo(factory, deps);
 
   const refresh = useCallback(() => {
-    setVersion(prev => prev + 1);
+    setVersion((prev) => prev + 1);
   }, []);
 
   useEffect(() => {
@@ -214,7 +235,7 @@ export function useMountedRef<T>(initialValue: T): React.MutableRefObject<T> {
       if (mountedRef.current) {
         ref.current = value;
       }
-    }
+    },
   };
 }
 
@@ -309,8 +330,13 @@ export function useAsync<T>(
     cacheTime?: number;
   } = {}
 ) {
-  const { initialData, revalidateOnFocus = true, revalidateOnReconnect = true, cacheTime = 5 * 60 * 1000 } = options;
-  
+  const {
+    initialData,
+    revalidateOnFocus = true,
+    revalidateOnReconnect = true,
+    cacheTime = 5 * 60 * 1000,
+  } = options;
+
   const [data, setData] = useState<T | undefined>(initialData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -439,26 +465,32 @@ export function useFormState<T extends Record<string, any>>(
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  const handleChange = useCallback((name: keyof T, value: any) => {
-    setValues(prev => ({ ...prev, [name]: value }));
-    
-    if (validateOnChange) {
-      // In a real implementation, you'd run validation here
-    }
-    
-    if (touched[name as string]) {
-      // Re-validate if field was already touched
-      // In a real implementation, you'd run validation here
-    }
-  }, [validateOnChange, touched]);
+  const handleChange = useCallback(
+    (name: keyof T, value: any) => {
+      setValues((prev) => ({ ...prev, [name]: value }));
 
-  const handleBlur = useCallback((name: keyof T) => {
-    setTouched(prev => ({ ...prev, [name]: true }));
-    
-    if (validateOnBlur) {
-      // In a real implementation, you'd run validation here
-    }
-  }, [validateOnBlur]);
+      if (validateOnChange) {
+        // In a real implementation, you'd run validation here
+      }
+
+      if (touched[name as string]) {
+        // Re-validate if field was already touched
+        // In a real implementation, you'd run validation here
+      }
+    },
+    [validateOnChange, touched]
+  );
+
+  const handleBlur = useCallback(
+    (name: keyof T) => {
+      setTouched((prev) => ({ ...prev, [name]: true }));
+
+      if (validateOnBlur) {
+        // In a real implementation, you'd run validation here
+      }
+    },
+    [validateOnBlur]
+  );
 
   const reset = useCallback(() => {
     setValues(initialState);
@@ -466,10 +498,13 @@ export function useFormState<T extends Record<string, any>>(
     setTouched({});
   }, [initialState]);
 
-  const handleSubmit = useCallback(async (onSubmit: (values: T) => Promise<void> | void) => {
-    // In a real implementation, you'd validate all fields here
-    await onSubmit(values);
-  }, [values]);
+  const handleSubmit = useCallback(
+    async (onSubmit: (values: T) => Promise<void> | void) => {
+      // In a real implementation, you'd validate all fields here
+      await onSubmit(values);
+    },
+    [values]
+  );
 
   return {
     values,
@@ -479,8 +514,9 @@ export function useFormState<T extends Record<string, any>>(
     handleBlur,
     reset,
     handleSubmit,
-    setFieldValue: (name: keyof T, value: any) => setValues(prev => ({ ...prev, [name]: value })),
-    setFieldError: (name: keyof T, error: string) => setErrors(prev => ({ ...prev, [name]: error })),
+    setFieldValue: (name: keyof T, value: any) => setValues((prev) => ({ ...prev, [name]: value })),
+    setFieldError: (name: keyof T, error: string) =>
+      setErrors((prev) => ({ ...prev, [name]: error })),
   };
 }
 
@@ -522,12 +558,12 @@ export function useTransition(
     duration?: number;
   } = {}
 ) {
-  const { 
-    enterFrom = 'opacity-0 scale-95', 
-    enterTo = 'opacity-100 scale-100', 
-    leaveFrom = 'opacity-100 scale-100', 
+  const {
+    enterFrom = 'opacity-0 scale-95',
+    enterTo = 'opacity-100 scale-100',
+    leaveFrom = 'opacity-100 scale-100',
     leaveTo = 'opacity-0 scale-95',
-    duration = 150 
+    duration = 150,
   } = options;
 
   const [transitionClass, setTransitionClass] = useState('');
@@ -556,7 +592,7 @@ export function useTransition(
 // Hook to measure render performance
 export function useRenderCounter(componentName: string = 'Component') {
   const renderCount = useRef(0);
-  
+
   useEffect(() => {
     renderCount.current += 1;
     console.debug(`${componentName} rendered ${renderCount.current} times`);
@@ -634,7 +670,7 @@ export function useElementSize<T extends HTMLElement>() {
 
     updateSize();
     window.addEventListener('resize', updateSize);
-    
+
     return () => window.removeEventListener('resize', updateSize);
   }, []);
 

@@ -7,6 +7,8 @@ import clsx from 'clsx';
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import 'winbox/dist/css/winbox.min.css';
+import { DevToolsBar } from '@renderer/components/DevTools/DevToolsBar';
+import { DevToolsPanel } from '@renderer/components/DevTools/DevToolsPanel';
 import Card from '@renderer/components/ui/Card/Card';
 import TabFilter from '@renderer/components/ui/TabFilter/TabFilter';
 import { menuData } from '@renderer/data/menu-data';
@@ -50,9 +52,27 @@ const Main: React.FC<MainProps> = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isDevToolsOpen, setIsDevToolsOpen] = useState(false);
   const windowStore = useWindowStore();
   const globalWindowRef = useRef(typeof window !== 'undefined' ? window : null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
+
+  // Keyboard shortcut for DevTools (Ctrl+Shift+D or Cmd+Shift+D)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'D') {
+        e.preventDefault();
+        setIsDevToolsOpen((prev) => !prev);
+      }
+      if (e.key === 'F12') {
+        e.preventDefault();
+        setIsDevToolsOpen((prev) => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Initialize event listeners
   useEffect(() => {
@@ -287,6 +307,15 @@ const Main: React.FC<MainProps> = () => {
           </SearchContainer>
         </MainNoNavbar>
       </ResponsiveMainContainer>
+
+      {isDevToolsOpen ? (
+        <DevToolsPanel
+          isOpen={isDevToolsOpen}
+          onToggle={() => setIsDevToolsOpen((prev) => !prev)}
+        />
+      ) : (
+        <DevToolsBar onOpenPanel={() => setIsDevToolsOpen(true)} />
+      )}
     </AppContainer>
   );
 };

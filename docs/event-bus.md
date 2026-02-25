@@ -5,6 +5,7 @@ This document describes the Event Bus system for cross-process communication.
 ## Overview
 
 The Event Bus enables communication between:
+
 - Main process and renderer process
 - Different renderer windows
 - Components within the same process
@@ -36,6 +37,32 @@ class RendererEventBus {
   emitToMain<T>(event: string, data: T): void
   emitToRenderer<T>(event: string, data: T, windowId?: number): void
 }
+```
+
+## Event Types
+
+Located in `src/shared/types/event-bus.ts`:
+
+```typescript
+export interface IEvent {
+  type: EventType;
+  data?: unknown;
+  timestamp?: number;
+  source?: string;
+}
+
+export interface EventHandlerOptions {
+  once?: boolean;
+  priority?: number;
+}
+
+export const EVENT_IPC_CHANNELS = {
+  subscribe: 'event:subscribe',
+  unsubscribe: 'event:unsubscribe',
+  emit: 'event:emit',
+  emitToRenderer: 'event:emit-to-renderer',
+  received: 'event:received',
+} as const;
 ```
 
 ## Event Constants
@@ -70,6 +97,7 @@ export const FileEvents = {
 Located in `src/main/ipc/event-bus-handlers.ts`:
 
 - `event:subscribe` - Subscribe renderer to events
+- `event:unsubscribe` - Unsubscribe from events
 - `event:emit` - Emit to main process
 - `event:emit-to-renderer` - Broadcast to renderers
 
@@ -106,9 +134,23 @@ eventBus.emitToMain('user:action', { action: 'click' });
 unsubscribe();
 ```
 
+### Using Preload API
+
+```typescript
+// Subscribe
+const unsubscribe = window.electronAPI.event.subscribe('app:ready');
+
+// Emit
+window.electronAPI.event.emit('user:action', { action: 'click' });
+
+// Unsubscribe
+window.electronAPI.event.unsubscribe('app:ready');
+```
+
 ## Best Practices
 
 1. Use constants for event names
 2. Always unsubscribe on component unmount
 3. Use type-safe payloads
 4. Avoid excessive event listeners
+5. Use descriptive event names (`domain:action` format)
